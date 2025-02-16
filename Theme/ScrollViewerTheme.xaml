@@ -1,0 +1,85 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Custom style for Vertical ScrollBar -->
+    <Style TargetType="ScrollBar"
+           x:Key="AMEVerticalThinScrollBar">
+        <Setter Property="Width"
+                Value="8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid>
+                        <Track Name="PART_Track"
+                               IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb Background="DarkGray"
+                                       BorderBrush="#1b1926"
+                                       BorderThickness="1"
+                                       Width="8" />
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Custom style for Horizontal ScrollBar -->
+    <Style TargetType="ScrollBar"
+           x:Key="AMEHorizontalThinScrollBar">
+        <Setter Property="Height"
+                Value="8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid>
+                        <Track Name="PART_Track">
+                            <Track.Thumb>
+                                <Thumb Background="DarkGray"
+                                       BorderBrush="#1b1926"
+                                       BorderThickness="1"
+                                       Height="8" />
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Custom ScrollViewer Template -->
+    <ControlTemplate x:Key="AMEScrollViewer"
+                     TargetType="ScrollViewer">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollContentPresenter Grid.Column="0"
+                                    Grid.Row="0" />
+            <ScrollBar Grid.Column="1"
+                       Grid.Row="0"
+                       Style="{StaticResource AMEVerticalThinScrollBar}"
+                       Orientation="Vertical"
+                       Name="PART_VerticalScrollBar"
+                       Maximum="{TemplateBinding ScrollableHeight}"
+                       ViewportSize="{TemplateBinding ViewportHeight}"
+                       Value="{Binding Path=VerticalOffset, 
+                                          RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+            <ScrollBar Grid.Column="0"
+                       Grid.Row="1"
+                       Style="{StaticResource AMEHorizontalThinScrollBar}"
+                       Orientation="Horizontal"
+                       Name="PART_HorizontalScrollBar"
+                       Maximum="{TemplateBinding ScrollableWidth}"
+                       ViewportSize="{TemplateBinding ViewportWidth}"
+                       Value="{Binding Path=HorizontalOffset, 
+                      RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

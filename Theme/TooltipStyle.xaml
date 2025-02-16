@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Custom ToolTip Style with Rounded Corners, Blue Borders, and Auto Resizing -->
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="#3a3a3a"/>
+        <!-- Slightly greyish background -->
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="BorderBrush" Value="#1b1926"/>
+        <Setter Property="FontFamily" Value="/Fonts/#Poppins"/>
+        <!-- Blue border -->
+        <Setter Property="BorderThickness" Value="2"/>
+
+        <!-- ControlTemplate for Rounded Corners -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10"
+                            Padding="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

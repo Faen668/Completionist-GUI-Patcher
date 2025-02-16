@@ -1,0 +1,347 @@
+﻿<Window x:Class="Completionist_GUI_Patcher.Patcher"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Completionist_GUI_Patcher"
+        mc:Ignorable="d"
+        Title="Completionist GUI Patcher..."
+        Height="430"
+        Width="1100"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        FontFamily="/Fonts/#Poppins"
+        MouseDown="Window_MouseDown"
+        MouseMove="Window_MouseMove"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        WindowStartupLocation="CenterScreen">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="1"
+                      CornerRadius="0"
+                      ResizeBorderThickness="4"
+                      GlassFrameThickness="0">
+        </WindowChrome>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="#272537"
+            BorderThickness="2"
+            BorderBrush="#fa9907"
+            CornerRadius="20">
+
+        <Grid x:Name="TopBar">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <!-- Buttons Grid separate from the columns with * -->
+            <Grid Grid.Row="0"
+                  Grid.ColumnSpan="2"
+                  HorizontalAlignment="Stretch"
+                  Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Widnow Title -->
+                <TextBlock Grid.Column="0"
+                           FontSize="20"
+                           Text="Completionist GUI Patcher..."
+                           Margin="14,10,10,10"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Foreground="#C7A16D"
+                           FontWeight="DemiBold" />
+
+                <Button Content="&#x2013;"
+                        ToolTip="Minimize"
+                        Style="{StaticResource CloseButtonsRounded}"
+                        Click="MinimizeButton_Click"
+                        Grid.Column="1" />
+
+                <Button Content="M"
+                        ToolTip="Maximize"
+                        Style="{StaticResource CloseButtonsRounded}"
+                        Click="MaximizeButton_Click"
+                        Grid.Column="2" />
+
+                <Button Content="&#x2715;"
+                        ToolTip="Close"
+                        Style="{StaticResource CloseButtonsRounded}"
+                        Click="CloseButton_Click"
+                        Grid.Column="3" />
+            </Grid>
+
+            <!-- Footer Panel -->
+            <StackPanel Grid.Row="2"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal"
+                        Margin="10,0,0,0"
+                        Width="Auto"
+                        Height="Auto">
+
+                <Label Content="Developed by Faen90"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Foreground="White" />
+            </StackPanel>
+
+            <!-- Footer Panel -->
+            <StackPanel Grid.Row="2"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Margin="0,0,10,0"
+                        Width="Auto"
+                        Height="Auto">
+
+                <Label Content="Patcher Version 1.0.1"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Foreground="White" />
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Grid.Column="0"
+                    Background="#272537"
+                    BorderThickness="2"
+                    BorderBrush="#22202f"
+                    CornerRadius="20">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="0"
+                               Foreground="DarkSalmon"
+                               Margin="20,10,0,10"
+                               FontSize="16"
+                               Text="Use these options if you would like to patch individual files." />
+
+                    <TextBox Grid.Column="0"
+                             Grid.Row="1"
+                             Name="InventoryLists"
+                             Text="Select inventorylists.swf"
+                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             Width="506.50"
+                             TextWrapping="NoWrap"
+                             Height="35"
+                             Margin="20,5,10,5" />
+
+                    <Button Grid.Row="1"
+                            Grid.Column="1"
+                            Name="SelectInventoryLists"
+                            Click="SelectInventoryLists_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Select"
+                            Margin="10,0,10,0"
+                            ToolTip="Select inventorylists.swf"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="0"
+                             Grid.Row="2"
+                             Name="CraftingMenu"
+                             Text="Select craftingmenu.swf"
+                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             Width="506.50"
+                             TextWrapping="NoWrap"
+                             Height="35"
+                             Margin="20,5,10,5" />
+
+                    <Button Grid.Row="2"
+                            Grid.Column="1"
+                            Name="SelectCraftingMenu"
+                            Click="SelectCraftingMenu_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Select"
+                            Margin="10,0,10,0"
+                            ToolTip="Select craftingmenu.swf"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="0"
+                             Grid.Row="3"
+                             Name="LootMenu"
+                             Text="Select lootmenu.swf"
+                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             Width="506.50"
+                             Height="35"
+                             Margin="20,5,10,5" />
+
+                    <Button Grid.Row="3"
+                            Grid.Column="1"
+                            Name="SelectLootMenu"
+                            Click="SelectLootMenu_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Select"
+                            Margin="10,0,10,0"
+                            ToolTip="Select lootmenu.swf"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+
+                    <TextBox Grid.Column="0"
+                             Grid.Row="4"
+                             Name="CocksMenu"
+                             Text="Select constructibleobjectmenu.swf"
+                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             Width="506.50"
+                             TextWrapping="NoWrap"
+
+                             Height="35"
+                             Margin="20,5,10,5" />
+
+                    <Button Grid.Row="4"
+                            Grid.Column="1"
+                            Name="SelectCocksMenu"
+                            Click="SelectCocksMenu_Click"
+                            Command="{Binding SelectCocksMenu}"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Select"
+                            Margin="10,0,10,0"
+                            ToolTip="Select constructibleobjectmenu.swf"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="5"
+                               Foreground="DarkSalmon"
+                               Margin="20,10,0,10"
+                               FontSize="16"
+                               Text="Use this option if you would like to patch all files found in a folder." />
+
+                    <TextBox Grid.Column="0"
+                             Grid.Row="6"
+                             Name="LoadOrder"
+                             Text="Select mods / staging folder"
+                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             Width="506.50"
+                             TextWrapping="NoWrap"
+                             Height="35"
+                             Margin="20,5,10,5" />
+
+                    <Button Grid.Row="6"
+                            Grid.Column="1"
+                            Name="SelectLoadOrder"
+                            Click="SelectLoadOrder_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Select"
+                            Margin="10,0,10,0"
+                            ToolTip="Select mods / staging folder"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1"
+                  Grid.Column="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="0"
+                               Foreground="DarkSalmon"
+                               Margin="20,10,0,10"
+                               FontSize="16"
+                               Text="Execution Log..." />
+
+                    <Border Grid.Row="1"
+                            Grid.Column="1"
+                            Background="#272537"
+                            BorderThickness="2"
+                            BorderBrush="#22202f"
+                            Margin="10,0,0,0"
+                            CornerRadius="20">
+
+                        <ScrollViewer Grid.Row="1"
+                                      Grid.Column="0"
+                                      VerticalAlignment="Stretch"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      Template="{StaticResource AMEScrollViewer}">
+
+                            <TextBlock Text="Nothing To Show..."
+                                       Name="Log"
+                                       Margin="10,10,0,0"
+                                       Foreground="White"
+                                       VerticalAlignment="Top"
+                                       HorizontalAlignment="Left"
+                                       TextWrapping="Wrap"
+                                       FontSize="14" />
+                        </ScrollViewer>
+                    </Border>
+
+                    <Button Grid.Row="2"
+                            Grid.Column="1"
+                            Name="Start"
+                            Click="Start_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Start Patching"
+                            Margin="10,0,10,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center" />
+                    
+                    <Button Grid.Row="2"
+                            Grid.Column="1"
+                            Name="CopyLog"
+                            Click="CopyLog_Click"
+                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                            Content="Copy Log To Clipboard"
+                            Margin="10,0,10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

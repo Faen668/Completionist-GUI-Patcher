@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Completionist GUI Patcher", "Completionist GUI Patcher.csproj", "{977031EF-66F9-49F7-B008-9CBAC314C952}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{977031EF-66F9-49F7-B008-9CBAC314C952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{977031EF-66F9-49F7-B008-9CBAC314C952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{977031EF-66F9-49F7-B008-9CBAC314C952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{977031EF-66F9-49F7-B008-9CBAC314C952}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2C3E56C6-943B-412F-B353-DC3704FF2D0E}
+	EndGlobalSection
+EndGlobal
