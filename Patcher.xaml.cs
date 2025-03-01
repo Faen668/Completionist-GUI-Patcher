@@ -10,6 +10,7 @@ using Util = Completionist_GUI_Patcher.Utility.Utility;
 using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
 using System.Windows.Controls;
 using System.Net.Http;
+using System.Windows.Threading;
 
 namespace Completionist_GUI_Patcher
 {
@@ -20,6 +21,7 @@ namespace Completionist_GUI_Patcher
     {
         private bool mRestoreForDragMove = false;
         private bool _isPinned = false;
+        private readonly List<string> _logLines = [];
 
         private readonly Dictionary<string, string> validFileMappings = new()
         {
@@ -71,7 +73,34 @@ namespace Completionist_GUI_Patcher
                 }
                 else
                 {
-                    Application.Current.Shutdown();
+                    UpdateLog($"Unable to continue without FFDec...");
+
+                    int countdown = 5;
+
+                    // Display countdown message
+                    UpdateLog($"Shutting down in {countdown} seconds...");
+
+                    // Create a timer to handle the countdown
+                    DispatcherTimer timer = new()
+                    {
+                        Interval = TimeSpan.FromSeconds(1)
+                    };
+                    timer.Tick += (sender, e) =>
+                    {
+                        countdown--;
+                        UpdateLog($"Shutting down in {countdown} seconds...", true);
+
+                        if (countdown <= 0)
+                        {
+                            // Stop the timer and shut down
+                            timer.Stop();
+                            UpdateLog("Shutting Down...");
+                            Application.Current.Shutdown();
+                        }
+                    };
+
+                    // Start the countdown
+                    timer.Start();
                 }
             }
 
@@ -201,12 +230,23 @@ namespace Completionist_GUI_Patcher
         //---------------------------------------------------
         //---------------------------------------------------
 
-        public void UpdateLog(string message)
+        public void UpdateLog(string message, bool clearLastLine = false)
         {
-            if (Log!.Text == "Nothing To Show...")
+            if (_logLines.Count == 0)
                 Log.Text = string.Empty;
 
-            Log.Text = $"{Log.Text}{message}\n\n";
+            if (clearLastLine && _logLines.Count > 0)
+            {
+                // Replace the last line with the new message
+                _logLines[^1] = $"{message}\n\n";
+            }
+            else
+            {
+                // Add the new message to the log lines
+                _logLines.Add($"{message}\n\n");
+            }
+
+            Log.Text = string.Join("", _logLines);
         }
 
         //---------------------------------------------------
@@ -215,6 +255,7 @@ namespace Completionist_GUI_Patcher
 
         public void ClearLog()
         {
+            _logLines.Clear();
             Log!.Text = "Nothing To Show...";
         }
 
