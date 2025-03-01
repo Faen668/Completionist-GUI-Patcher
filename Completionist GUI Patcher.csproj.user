@@ -9,7 +9,13 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Messages\Confirmation Message\Confirmation Message.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Patcher.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ButtonStyleTimer.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Theme\ScrollViewerTheme.xaml">

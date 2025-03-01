@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Completionist_GUI_Patcher"
         mc:Ignorable="d"
         Title="Completionist GUI Patcher..."
-        Height="430"
+        Height="390"
         Width="1100"
         WindowStyle="None"
         ResizeMode="CanResize"
@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
+
             <!-- Buttons Grid separate from the columns with * -->
             <Grid Grid.Row="0"
                   Grid.ColumnSpan="2"
@@ -50,6 +50,7 @@
                   Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="30" />
@@ -65,23 +66,33 @@
                            Foreground="#C7A16D"
                            FontWeight="DemiBold" />
 
+                <Image Source="pack://application:,,,/Images/unpinned.png"
+                       Name="PinWindow"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       MouseLeftButtonDown="PinWindow_MouseLeftButtonDown"
+                       ToolTip="Pin Window"
+                       Width="20"
+                       Height="20"
+                       Grid.Column="1" />
+
                 <Button Content="&#x2013;"
                         ToolTip="Minimize"
                         Style="{StaticResource CloseButtonsRounded}"
                         Click="MinimizeButton_Click"
-                        Grid.Column="1" />
+                        Grid.Column="2" />
 
                 <Button Content="M"
                         ToolTip="Maximize"
                         Style="{StaticResource CloseButtonsRounded}"
                         Click="MaximizeButton_Click"
-                        Grid.Column="2" />
+                        Grid.Column="3" />
 
                 <Button Content="&#x2715;"
                         ToolTip="Close"
                         Style="{StaticResource CloseButtonsRounded}"
                         Click="CloseButton_Click"
-                        Grid.Column="3" />
+                        Grid.Column="4" />
             </Grid>
 
             <!-- Footer Panel -->
@@ -110,7 +121,8 @@
                         Width="Auto"
                         Height="Auto">
 
-                <Label Content="Patcher Version 1.0.1"
+                <Label Name="VersionLabel"
+                       Content="Patcher Version 1.0.1"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
                        Foreground="White" />
@@ -125,7 +137,6 @@
 
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -200,28 +211,6 @@
 
                     <TextBox Grid.Column="0"
                              Grid.Row="3"
-                             Name="LootMenu"
-                             Text="Select lootmenu.swf"
-                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Width="506.50"
-                             Height="35"
-                             Margin="20,5,10,5" />
-
-                    <Button Grid.Row="3"
-                            Grid.Column="1"
-                            Name="SelectLootMenu"
-                            Click="SelectLootMenu_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Select"
-                            Margin="10,0,10,0"
-                            ToolTip="Select lootmenu.swf"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
-
-                    <TextBox Grid.Column="0"
-                             Grid.Row="4"
                              Name="CocksMenu"
                              Text="Select constructibleobjectmenu.swf"
                              Style="{StaticResource ResourceKey=AMETextBoxStyle}"
@@ -229,11 +218,10 @@
                              IsEnabled="False"
                              Width="506.50"
                              TextWrapping="NoWrap"
-
                              Height="35"
                              Margin="20,5,10,5" />
 
-                    <Button Grid.Row="4"
+                    <Button Grid.Row="3"
                             Grid.Column="1"
                             Name="SelectCocksMenu"
                             Click="SelectCocksMenu_Click"
@@ -246,14 +234,14 @@
                             VerticalAlignment="Center" />
 
                     <TextBlock Grid.Column="0"
-                               Grid.Row="5"
+                               Grid.Row="4"
                                Foreground="DarkSalmon"
-                               Margin="20,10,0,10"
+                               Margin="20,20,0,10"
                                FontSize="16"
                                Text="Use this option if you would like to patch all files found in a folder." />
 
                     <TextBox Grid.Column="0"
-                             Grid.Row="6"
+                             Grid.Row="5"
                              Name="LoadOrder"
                              Text="Select mods / staging folder"
                              Style="{StaticResource ResourceKey=AMETextBoxStyle}"
@@ -264,7 +252,7 @@
                              Height="35"
                              Margin="20,5,10,5" />
 
-                    <Button Grid.Row="6"
+                    <Button Grid.Row="5"
                             Grid.Column="1"
                             Name="SelectLoadOrder"
                             Click="SelectLoadOrder_Click"
@@ -330,7 +318,7 @@
                             Margin="10,0,10,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center" />
-                    
+
                     <Button Grid.Row="2"
                             Grid.Column="1"
                             Name="CopyLog"

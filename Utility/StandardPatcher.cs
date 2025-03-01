@@ -7,7 +7,7 @@ namespace Completionist_GUI_Patcher.Utility
 {
     internal class StandardPatcher
     {
-        public static void Patch(Patcher instance, string? filePath, string className)
+        public static int Patch(Patcher instance, string? filePath, string className)
         {
             // Define extraction directory and script paths.
             string curWorkingDir = Directory.GetCurrentDirectory();
@@ -23,7 +23,7 @@ namespace Completionist_GUI_Patcher.Utility
             {
                 instance.UpdateLog($"Error: filePath cannot be null");
                 instance.UpdateLog("Exiting...");
-                return;
+                return 0;
             }
 
             // Create backup file.
@@ -41,7 +41,7 @@ namespace Completionist_GUI_Patcher.Utility
             {
                 instance.UpdateLog($"Error creating backup: {ex.Message}");
                 instance.UpdateLog("Exiting...");
-                return;
+                return 0;
             }
 
             // Create extraction directory if it doesn't exist.
@@ -56,7 +56,7 @@ namespace Completionist_GUI_Patcher.Utility
                     instance.UpdateLog($"Unable to create extraction directory: {ex.Message}");
                     File.Delete(backupPath);
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
             }
 
@@ -104,7 +104,7 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
                     instance.UpdateLog($"Failed to extract ActionScript using FFDec. Error code: {extractResult}");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
             }
             catch (Exception ex)
@@ -113,7 +113,7 @@ namespace Completionist_GUI_Patcher.Utility
                 Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
                 instance.UpdateLog($"Error executing FFDec: {ex.Message}");
                 instance.UpdateLog("Exiting...");
-                return;
+                return 0;
             }
 
             instance.UpdateLog($"Actionscript extracted successfully.");
@@ -129,7 +129,7 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);
                     instance.UpdateLog($"Failed to read ActionScript file: {actionScriptFile}");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
 
                 // Check if the script content already has completionist support
@@ -139,7 +139,7 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);
                     instance.UpdateLog($"{Path.GetFileName(filePath)} already has completionist support");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
             }
             catch (Exception ex)
@@ -148,7 +148,7 @@ namespace Completionist_GUI_Patcher.Utility
                 Directory.Delete(extractionDir, true);
                 instance.UpdateLog($"Error reading ActionScript file: {ex.Message}");
                 instance.UpdateLog("Exiting...");
-                return;
+                return 0;
             }
 
             try
@@ -159,7 +159,7 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);
                     instance.UpdateLog("Script content is empty or null.");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
 
                 // Define the regex pattern to find the line with 'var _locX_ = a_entryObject.text;'
@@ -194,7 +194,7 @@ namespace Completionist_GUI_Patcher.Utility
                             Directory.Delete(extractionDir, true);
                             instance.UpdateLog("Failed to insert lines after variable.");
                             instance.UpdateLog("Exiting...");
-                            return;
+                            return 0;
                         }
 
                         string colorInsertString = "this.formatColor(a_entryField,a_entryObject,a_state);";
@@ -205,7 +205,7 @@ namespace Completionist_GUI_Patcher.Utility
                             Directory.Delete(extractionDir, true);
                             instance.UpdateLog("Failed to insert color formatting.");
                             instance.UpdateLog("Exiting...");
-                            return;
+                            return 0;
                         }
 
                         // Now, write the modified content back
@@ -215,7 +215,7 @@ namespace Completionist_GUI_Patcher.Utility
                             Directory.Delete(extractionDir, true);
                             instance.UpdateLog("Failed to write modified content to file.");
                             instance.UpdateLog("Exiting...");
-                            return;
+                            return 0;
                         }
                     }
                     else
@@ -224,7 +224,7 @@ namespace Completionist_GUI_Patcher.Utility
                         Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
                         instance.UpdateLog("Failed to extract variable name from pattern match.");
                         instance.UpdateLog("Exiting...");
-                        return;
+                        return 0;
                     }
                 }
                 else
@@ -233,7 +233,7 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
                     instance.UpdateLog("Pattern not found in ActionScript file.");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
 
                 // Finished
@@ -292,11 +292,12 @@ namespace Completionist_GUI_Patcher.Utility
                     Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
                     instance.UpdateLog($"Failed to replace ActionScript using FFDec. Error code: {result}");
                     instance.UpdateLog("Exiting...");
-                    return;
+                    return 0;
                 }
 
                 instance.UpdateLog("SWF compiled successfully...");
                 Directory.Delete(extractionDir, true);  // Clean up extraction directory
+                return 1;
             }
             catch (Exception ex)
             {
@@ -305,6 +306,8 @@ namespace Completionist_GUI_Patcher.Utility
                 instance.UpdateLog($"Error executing FFDec replace: {ex.Message}");
                 instance.UpdateLog("Exiting...");
             }
+
+            return 0;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using Completionist_GUI_Patcher.Utility;
 using System.Windows;
 
 namespace Completionist_GUI_Patcher
@@ -9,6 +8,9 @@ namespace Completionist_GUI_Patcher
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+        }
     }
-
 }

@@ -1,12 +1,13 @@
-﻿using Completionist_GUI_Patcher.Utility;
+﻿using Completionist_GUI_Patcher.Messages.ConfirmationMessage;
+using Completionist_GUI_Patcher.Utility;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 using Util = Completionist_GUI_Patcher.Utility.Utility;
+using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
 
 namespace Completionist_GUI_Patcher
 {
@@ -16,12 +17,12 @@ namespace Completionist_GUI_Patcher
     public partial class Patcher : Window
     {
         private bool mRestoreForDragMove = false;
+        private bool _isPinned = false;
 
         private readonly Dictionary<string, string> validFileMappings = new()
         {
             { "InventoryLists", "inventorylists.swf" },
             { "CraftingMenu", "craftingmenu.swf" },
-            { "LootMenu", "lootmenu.swf" },
             { "CocksMenu", "constructibleobjectmenu.swf" }
         };
 
@@ -33,6 +34,34 @@ namespace Completionist_GUI_Patcher
         {
             InitializeComponent();
             this.SourceInitialized += Window_SourceInitialized;
+            VersionLabel.Content = $"Patcher Version {GUpd.GetCurrentVersion()}";
+            this.Loaded += Patcher_Loaded;
+        }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        private async void Patcher_Loaded(object sender, RoutedEventArgs e)
+        {
+            await GUpd.CheckForUpdates();
+            if (GUpd.CanUpdate()) // Now this will correctly return true if an update is found
+            {
+                var cm = new Confirmation_Message(
+                    "Patcher Update Found...",
+                    $"A new version ({GUpd.GetLatestVersion()}) is available. You are running {GUpd.GetCurrentVersion()}.\nDo you want to update now?",
+                    null,
+                    null,
+                    "Update Now",
+                    "Cancel",
+                    5);
+
+                cm.ShowDialog();
+                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
+                {
+                    GUpd.DoUpdate();
+                }
+            }
         }
 
         //---------------------------------------------------
@@ -123,7 +152,6 @@ namespace Completionist_GUI_Patcher
                 InventoryLists!.Text = "Select inventorylists.swf";
                 CraftingMenu!.Text = "Select craftingmenu.swf";
                 CocksMenu!.Text = "Select constructibleobjectmenu.swf";
-                LootMenu!.Text = "Select lootmenu.swf";
                 UpdateLog($"Selected Folder: {LoadOrder.Text}");
             }
         }
@@ -150,33 +178,34 @@ namespace Completionist_GUI_Patcher
                 {
                     // Get all files recursively
                     string[] files = Directory.GetFiles(LoadOrder.Text, "*", SearchOption.AllDirectories);
+                    int filesPatched = 0;
+                    int validFilesNames = 0;
 
                     foreach (string file in files)
                     {
                         if (Path.GetFileName(file).Equals("inventorylists.swf", StringComparison.OrdinalIgnoreCase))
                         {
+                            validFilesNames++;
                             UpdateLog($"Selected File: {file}");
-                            StandardPatcher.Patch(this, file, "InventoryListEntry");
+                            filesPatched += StandardPatcher.Patch(this, file, "InventoryListEntry");
                         }
 
                         if (Path.GetFileName(file).Equals("craftingmenu.swf", StringComparison.OrdinalIgnoreCase))
                         {
+                            validFilesNames++;
                             UpdateLog($"Selected File: {file}");
-                            StandardPatcher.Patch(this, file, "CraftingListEntry");
+                            filesPatched += StandardPatcher.Patch(this, file, "CraftingListEntry");
                         }
 
                         if (Path.GetFileName(file).Equals("constructibleobjectmenu.swf", StringComparison.OrdinalIgnoreCase))
                         {
+                            validFilesNames++;
                             UpdateLog($"Selected File: {file}");
-                            StandardPatcher.Patch(this, file, "CraftingListEntry");
-                        }
-
-                        if (Path.GetFileName(file).Equals("lootmenu.swf", StringComparison.OrdinalIgnoreCase))
-                        {
-                            UpdateLog($"Selected File: {file}");
-                            LootMenuPatcher.Patch(this, file);
+                            filesPatched += StandardPatcher.Patch(this, file, "CraftingListEntry");
                         }
                     }
+
+                    UpdateLog($"Patched {filesPatched}/{validFilesNames} valid files.");
                 }
                 catch (Exception ex)
                 {
@@ -200,12 +229,6 @@ namespace Completionist_GUI_Patcher
             {
                 UpdateLog($"Patching constructibleobjectmenu.swf");
                 StandardPatcher.Patch(this, CocksMenu!.Text, "CraftingListEntry");
-            }
-
-            if (LootMenu!.Text != "Select lootmenu.swf")
-            {
-                UpdateLog($"Patching lootmenu.swf");
-                LootMenuPatcher.Patch(this, LootMenu!.Text);
             }
         }
 
@@ -315,6 +338,18 @@ namespace Completionist_GUI_Patcher
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             base.OnClosing(e);
+        }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+        
+        private void PinWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _isPinned = !_isPinned;
+            PinWindow.Source = new BitmapImage(new Uri($"pack://application:,,,/Images/{(_isPinned ? "pinned.png" : "unpinned.png")}", UriKind.Absolute));
+            PinWindow.ToolTip = _isPinned ? "Unpin Window" : "Pin Window";
+            Topmost = _isPinned;
         }
     }
 }

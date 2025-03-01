@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Theme/ButtonStyle.xaml" />
                 <ResourceDictionary Source="Theme/TextBoxTheme.xaml" />
                 <ResourceDictionary Source="Theme/ScrollViewerTheme.xaml" />
+                <ResourceDictionary Source="Theme/ButtonStyleTimer.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

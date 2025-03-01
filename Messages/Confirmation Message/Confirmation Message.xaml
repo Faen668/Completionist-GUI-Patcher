@@ -1,0 +1,120 @@
+﻿<Window x:Class="Completionist_GUI_Patcher.Messages.ConfirmationMessage.Confirmation_Message"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Completionist_GUI_Patcher.Messages.ConfirmationMessage.ViewModel"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        MinWidth="500"
+        AllowsTransparency="True"
+        FontFamily="/Fonts/#Poppins"
+        SizeToContent="WidthAndHeight"
+        MouseDown="Window_MouseDown"
+        Topmost="True"
+        Title="Confirmation Message"
+        Height="150"
+        Width="500">
+
+    <Window.DataContext>
+        <vm:Confirmation_Message_View_Model />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+
+    <Border Background="#272537"
+            CornerRadius="20"
+            BorderThickness="2"
+            BorderBrush="#fa9907">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <!-- Main Content Row -->
+            </Grid.RowDefinitions>
+
+            <!-- Message Title -->
+            <Label Name="Lbl_Title"
+                   Grid.Column="1"
+                   Grid.Row="0"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="10"
+                   Padding="0"
+                   Foreground="#C7A16D"
+                   d:Content="This is a title"
+                   Content="{Binding Title}" />
+
+            <!-- Message Body -->
+            <TextBlock Name="Txt_Message"
+                       Grid.Column="1"
+                       Grid.Row="1"
+                       Foreground="White"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       FontSize="14"
+                       FontWeight="DemiBold"
+                       TextWrapping="Wrap"
+                       Width="400"
+                       Padding="0,5"
+                       Margin="10,0,15,0"
+                       d:Text="This is a message body"
+                       Text="{Binding Body}" />
+
+            <StackPanel Grid.Column="1"
+                        Grid.Row="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right"
+                        Margin="0,10,0,10">
+                
+                <Button Name="CanButton"
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                        Content="{Binding ButtonTextCan}"
+                        Command="{Binding CanButtonClicked}"
+                        Visibility="Visible"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,15,10" />
+
+                <Button Name="YesButton"
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                        Content="{Binding ButtonTextYes}"
+                        Command="{Binding YesButtonClicked}"
+                        Visibility="{Binding IsButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,15,10">
+                </Button>
+
+                <Label Grid.Column="1"
+                       Grid.Row="2"
+                       Style="{StaticResource ResourceKey=ButtonStyleTimer}"
+                       Content="{Binding TimerText}"
+                       Visibility="{Binding IsTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Bottom"
+                       d:Visibility="Visible"
+                       Margin="0,0,15,10" />
+            </StackPanel>
+
+        </Grid>
+    </Border>
+</Window>
