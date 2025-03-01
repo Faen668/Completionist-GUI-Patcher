@@ -282,6 +282,39 @@
                                FontSize="16"
                                Text="Execution Log..." />
 
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Grid.Row="0"
+                                Grid.Column="0"
+                                Name="Start"
+                                Click="Start_Click"
+                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                                Content="Patch"
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" />
+
+                        <Button Grid.Row="2"
+                                Grid.Column="1"
+                                Name="CopyLog"
+                                Click="CopyLog_Click"
+                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                                Content="Copy Log"
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center" />
+
+                        <Button Grid.Row="0"
+                                Grid.Column="0"
+                                Name="ClearLogButton"
+                                Click="ClearLogButton_Click"
+                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
+                                Content="Clear Log"
+                                Margin="5,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center" />
+                    </StackPanel>
+
+
                     <Border Grid.Row="1"
                             Grid.Column="1"
                             Background="#272537"
@@ -308,26 +341,6 @@
                                        FontSize="14" />
                         </ScrollViewer>
                     </Border>
-
-                    <Button Grid.Row="2"
-                            Grid.Column="1"
-                            Name="Start"
-                            Click="Start_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Start Patching"
-                            Margin="10,0,10,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center" />
-
-                    <Button Grid.Row="2"
-                            Grid.Column="1"
-                            Name="CopyLog"
-                            Click="CopyLog_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Copy Log To Clipboard"
-                            Margin="10,0,10,0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center" />
                 </Grid>
             </Grid>
         </Grid>

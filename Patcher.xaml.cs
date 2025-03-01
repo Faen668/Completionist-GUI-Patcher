@@ -8,6 +8,8 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Util = Completionist_GUI_Patcher.Utility.Utility;
 using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
+using System.Windows.Controls;
+using System.Net.Http;
 
 namespace Completionist_GUI_Patcher
 {
@@ -44,6 +46,36 @@ namespace Completionist_GUI_Patcher
 
         private async void Patcher_Loaded(object sender, RoutedEventArgs e)
         {
+            //check for ffdec.
+            if (!ValidateFFDec())
+            {
+                var cm = new Confirmation_Message(
+                    "FFDec Validation Failed...",
+                    $"Completionist GUI Patcher relies on a tool called FFDec to function.\nWithout FFDec Installed, no files can be patched.\n\nDo you want to download it now?",
+                    null,
+                    null,
+                    "Download",
+                    "Cancel",
+                    5);
+
+                cm.ShowDialog();
+                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
+                {
+                    UpdateLog("Downloading FFDec...");
+                    bool success = await DownloadFFDec();
+                    if (!success)
+                    {
+                        UpdateLog("FFDec setup failed. Aborting update check.");
+                        return; // Exit early if FFDec isn't available
+                    }
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+
+            //do app updates
             await GUpd.CheckForUpdates();
             if (GUpd.CanUpdate()) // Now this will correctly return true if an update is found
             {
@@ -63,6 +95,66 @@ namespace Completionist_GUI_Patcher
                 }
             }
         }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        private static bool ValidateFFDec()
+        {
+            string ffdecPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffdec", "ffdec.exe");
+            return File.Exists(ffdecPath);
+        }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        public async Task<bool> DownloadFFDec()
+        {
+            string url = "https://github.com/jindrapetrik/jpexs-decompiler/releases/download/nightly3026/ffdec_22.0.2_nightly3026.zip";
+            string downloadsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+            string downloadPath = Path.Combine(downloadsPath, "ffdec.zip");
+            string extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffdec");
+
+            // Ensure downloads directory exists
+            if (!Directory.Exists(downloadsPath))
+                Directory.CreateDirectory(downloadsPath);
+
+            // Ensure extract directory exists
+            if (!Directory.Exists(extractPath))
+                Directory.CreateDirectory(extractPath);
+
+            using HttpClient client = new();
+            try
+            {
+                byte[] fileBytes = await client.GetByteArrayAsync(url);
+                await File.WriteAllBytesAsync(downloadPath, fileBytes);
+                UpdateLog("Download complete. Extracting...");
+
+                // Ensure ffdec folder exists before extracting
+                if (!Directory.Exists(extractPath))
+                    Directory.CreateDirectory(extractPath);
+
+                System.IO.Compression.ZipFile.ExtractToDirectory(downloadPath, extractPath);
+                UpdateLog("FFDec extracted successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                UpdateLog($"Error downloading or extracting FFDec: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                // Cleanup: Only delete the ZIP file, not the entire folder
+                if (File.Exists(downloadPath))
+                {
+                    File.Delete(downloadPath);
+                }
+            }
+        }
+
 
         //---------------------------------------------------
         //---------------------------------------------------
@@ -121,7 +213,7 @@ namespace Completionist_GUI_Patcher
         //---------------------------------------------------
         //---------------------------------------------------
 
-        public void ClearLog(string message)
+        public void ClearLog()
         {
             Log!.Text = "Nothing To Show...";
         }
@@ -164,6 +256,15 @@ namespace Completionist_GUI_Patcher
         {
             UpdateLog($"Log Copied To Clipboard...");
             Clipboard.SetText(Log!.Text);
+        }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClearLog();
         }
 
         //---------------------------------------------------

@@ -14,7 +14,7 @@ namespace Completionist_GUI_Patcher.Utility
             string extractionDir = Path.Combine(curWorkingDir, "extracted");
             string actionScriptFile = Path.Combine(extractionDir, "scripts", "__Packages", $"{className}.as");
             string scriptName = $@"\__Packages\{className}";
-            string ffdecPath = Path.Combine(curWorkingDir, "ffdec_22.0.2_nightly3026", "ffdec-cli.exe");
+            string ffdecPath = Path.Combine(curWorkingDir, "ffdec", "ffdec-cli.exe");
             string extractCommand = $"\"{ffdecPath}\" -export script \"{extractionDir}\" \"{filePath}\"";
             string replaceCommand = $"\"{ffdecPath}\" -replace \"{filePath}\" \"{filePath}\" \"{scriptName}\" \"{actionScriptFile}\"";
             string backupPath;
