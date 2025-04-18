@@ -11,6 +11,7 @@ using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
 using System.Windows.Controls;
 using System.Net.Http;
 using System.Windows.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Completionist_GUI_Patcher
 {
@@ -21,6 +22,8 @@ namespace Completionist_GUI_Patcher
     {
         private bool mRestoreForDragMove = false;
         private bool _isPinned = false;
+        private bool _inputAllowed = false;
+
         private readonly List<string> _logLines = [];
 
         private readonly Dictionary<string, string> validFileMappings = new()
@@ -48,61 +51,7 @@ namespace Completionist_GUI_Patcher
 
         private async void Patcher_Loaded(object sender, RoutedEventArgs e)
         {
-            //check for ffdec.
-            if (!ValidateFFDec())
-            {
-                var cm = new Confirmation_Message(
-                    "FFDec Validation Failed...",
-                    $"Completionist GUI Patcher relies on a tool called FFDec to function.\nWithout FFDec Installed, no files can be patched.\n\nDo you want to download it now?",
-                    null,
-                    null,
-                    "Download",
-                    "Cancel",
-                    5);
-
-                cm.ShowDialog();
-                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
-                {
-                    UpdateLog("Downloading FFDec...");
-                    bool success = await DownloadFFDec();
-                    if (!success)
-                    {
-                        UpdateLog("FFDec setup failed. Aborting update check.");
-                        return; // Exit early if FFDec isn't available
-                    }
-                }
-                else
-                {
-                    UpdateLog($"Unable to continue without FFDec...");
-
-                    int countdown = 5;
-
-                    // Display countdown message
-                    UpdateLog($"Shutting down in {countdown} seconds...");
-
-                    // Create a timer to handle the countdown
-                    DispatcherTimer timer = new()
-                    {
-                        Interval = TimeSpan.FromSeconds(1)
-                    };
-                    timer.Tick += (sender, e) =>
-                    {
-                        countdown--;
-                        UpdateLog($"Shutting down in {countdown} seconds...", true);
-
-                        if (countdown <= 0)
-                        {
-                            // Stop the timer and shut down
-                            timer.Stop();
-                            UpdateLog("Shutting Down...");
-                            Application.Current.Shutdown();
-                        }
-                    };
-
-                    // Start the countdown
-                    timer.Start();
-                }
-            }
+            _inputAllowed = false;
 
             //do app updates
             await GUpd.CheckForUpdates();
@@ -123,16 +72,84 @@ namespace Completionist_GUI_Patcher
                     GUpd.DoUpdate();
                 }
             }
+
+            _inputAllowed = await ValidateFFDec();
         }
 
         //---------------------------------------------------
         //---------------------------------------------------
         //---------------------------------------------------
 
-        private static bool ValidateFFDec()
+        private async Task<bool> ValidateFFDec()
         {
             string ffdecPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffdec", "ffdec.exe");
-            return File.Exists(ffdecPath);
+
+            //check for ffdec.
+            if (!File.Exists(ffdecPath))
+            {
+                var cm = new Confirmation_Message(
+                    "FFDec Validation Failed...",
+                    $"Completionist GUI Patcher relies on a tool called FFDec to function.\nWithout FFDec Installed, no files can be patched.\n\nDo you want to download it now?",
+                    null,
+                    null,
+                    "Download",
+                    "Cancel",
+                    5);
+
+                cm.ShowDialog();
+                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
+                {
+                    UpdateLog("Downloading FFDec...");
+                    bool success = await DownloadFFDec();
+                    if (!success)
+                    {
+                        UpdateLog("FFDec setup failed. Aborting update check.");
+                        ShutDown();
+                        return false;
+                    }
+                }
+                else
+                {
+                    UpdateLog($"Unable to continue without FFDec...");
+                    ShutDown();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        private void ShutDown()
+        {
+            int countdown = 5;
+
+            // Display countdown message
+            UpdateLog($"Shutting down in {countdown} seconds...");
+
+            // Create a timer to handle the countdown
+            DispatcherTimer timer = new()
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            timer.Tick += (sender, e) =>
+            {
+                countdown--;
+                UpdateLog($"Shutting down in {countdown} seconds...", true);
+
+                if (countdown <= 0)
+                {
+                    // Stop the timer and shut down
+                    timer.Stop();
+                    UpdateLog("Shutting Down...");
+                    Application.Current.Shutdown();
+                }
+            };
+
+            // Start the countdown
+            timer.Start();
         }
 
         //---------------------------------------------------
@@ -141,7 +158,7 @@ namespace Completionist_GUI_Patcher
 
         public async Task<bool> DownloadFFDec()
         {
-            string url = "https://github.com/jindrapetrik/jpexs-decompiler/releases/download/nightly3026/ffdec_22.0.2_nightly3026.zip";
+            string url = "https://github.com/jindrapetrik/jpexs-decompiler/releases/download/nightly3043/ffdec_22.0.2_nightly3043.zip";
             string downloadsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
             string downloadPath = Path.Combine(downloadsPath, "ffdec.zip");
             string extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffdec");
@@ -191,6 +208,9 @@ namespace Completionist_GUI_Patcher
 
         private void OpenFileDialogAndValidate(string eventName)
         {
+            if (!_inputAllowed)
+                return;
+
             OpenFileDialog openFileDialog = new()
             {
                 //InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
@@ -274,6 +294,9 @@ namespace Completionist_GUI_Patcher
 
         private void SelectLoadOrder_Click(object sender, RoutedEventArgs e)
         {
+            if (!_inputAllowed)
+                return;
+
             OpenFolderDialog openFolderDialog = new()
             {
                 Title = "Select a folder"
@@ -295,6 +318,9 @@ namespace Completionist_GUI_Patcher
 
         private void CopyLog_Click(object sender, RoutedEventArgs e)
         {
+            if (!_inputAllowed)
+                return;
+
             UpdateLog($"Log Copied To Clipboard...");
             Clipboard.SetText(Log!.Text);
         }
@@ -305,6 +331,9 @@ namespace Completionist_GUI_Patcher
 
         private void ClearLogButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!_inputAllowed)
+                return;
+
             ClearLog();
         }
 
@@ -314,6 +343,9 @@ namespace Completionist_GUI_Patcher
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            if (!_inputAllowed)
+                return;
+
             if (LoadOrder!.Text != "Select mods / staging folder")
             {
                 try
