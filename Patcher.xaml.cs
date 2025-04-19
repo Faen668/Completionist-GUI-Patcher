@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Net.Http;
 using System.Windows.Threading;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace Completionist_GUI_Patcher
 {
@@ -183,13 +184,15 @@ namespace Completionist_GUI_Patcher
                     Directory.CreateDirectory(extractPath);
 
                 System.IO.Compression.ZipFile.ExtractToDirectory(downloadPath, extractPath);
-                UpdateLog("FFDec extracted successfully.");
+                UpdateLog("FFDec downloaded & extracted successfully.");
                 return true;
             }
             catch (Exception ex)
             {
                 UpdateLog($"Error downloading or extracting FFDec: {ex.Message}");
-                return false;
+                UpdateLog("Attempting to fetch latest nightly build.");
+
+                return await DownloadFFDecLatestNightly();
             }
             finally
             {
@@ -201,6 +204,71 @@ namespace Completionist_GUI_Patcher
             }
         }
 
+        //---------------------------------------------------
+        //---------------------------------------------------
+        //---------------------------------------------------
+
+        public async Task<bool> DownloadFFDecLatestNightly()
+        {
+            string apiUrl = "https://api.github.com/repos/jindrapetrik/jpexs-decompiler/releases";
+            string downloadsPath = AppDomain.CurrentDomain.BaseDirectory;
+            string downloadPath = Path.Combine(downloadsPath, "ffdec.zip");
+            string extractPath = Path.Combine(downloadsPath, "ffdec");
+
+            try
+            {
+                using HttpClient client = new();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MyApp/1.0)");
+
+                string json = await client.GetStringAsync(apiUrl);
+                var releases = System.Text.Json.JsonSerializer.Deserialize<List<GitHubRelease>>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                // Find the latest nightly pre-release
+                var nightly = releases?
+                    .Where(r => r.Prerelease && r.TagName.Contains("nightly", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(r => r.PublishedAt)
+                    .FirstOrDefault();
+
+                if (nightly == null)
+                {
+                    UpdateLog("No nightly release found.");
+                    return false;
+                }
+
+                var asset = nightly.Assets.FirstOrDefault(a => a.Name.EndsWith(".zip"));
+                if (asset == null)
+                {
+                    UpdateLog("No ZIP file found in latest nightly release.");
+                    return false;
+                }
+
+                UpdateLog($"Downloading FFDec {nightly.TagName}...");
+                byte[] fileBytes = await client.GetByteArrayAsync(asset.BrowserDownloadUrl);
+                await File.WriteAllBytesAsync(downloadPath, fileBytes);
+
+                UpdateLog("Download complete. Extracting...");
+
+                if (Directory.Exists(extractPath))
+                    Directory.Delete(extractPath, true);
+
+                System.IO.Compression.ZipFile.ExtractToDirectory(downloadPath, extractPath);
+                UpdateLog("FFDec downloaded & extracted successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                UpdateLog($"Error downloading or extracting FFDec: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                if (File.Exists(downloadPath))
+                    File.Delete(downloadPath);
+            }
+        }
 
         //---------------------------------------------------
         //---------------------------------------------------

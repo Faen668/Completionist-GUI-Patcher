@@ -1,8 +1,33 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 namespace Completionist_GUI_Patcher.Utility
 {
+    public class GitHubRelease
+    {
+        [JsonPropertyName("tag_name")]
+        public string TagName { get; set; } = string.Empty;
+
+        [JsonPropertyName("prerelease")]
+        public bool Prerelease { get; set; }
+
+        [JsonPropertyName("published_at")]
+        public DateTime PublishedAt { get; set; }
+
+        [JsonPropertyName("assets")]
+        public List<GitHubAsset> Assets { get; set; } = [];
+    }
+
+    public class GitHubAsset
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("browser_download_url")]
+        public string BrowserDownloadUrl { get; set; } = string.Empty;
+    }
+
     public static class Utility
     {
         public static (string modifiedContent, bool success) InsertBaseLinesAfterVariable(string content, string targetLine, string newLines, Patcher instance)
