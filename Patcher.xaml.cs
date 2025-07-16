@@ -386,9 +386,6 @@ namespace Completionist_GUI_Patcher
 
         private void CopyLog_Click(object sender, RoutedEventArgs e)
         {
-            if (!_inputAllowed)
-                return;
-
             UpdateLog($"Log Copied To Clipboard...");
             Clipboard.SetText(Log!.Text);
         }
