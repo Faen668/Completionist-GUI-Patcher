@@ -7,7 +7,7 @@
 
 A modern desktop application that automatically adds completionist support to SWF files for game modding. Parses `CompTag` and applies colored text to inventory, crafting, and constructible menus.
 
-![Screenshot](https://screenshot.png)
+![Screenshot](screenshot.png)
 
 ---
 
