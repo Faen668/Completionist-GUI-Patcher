@@ -5,7 +5,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 
-A modern desktop application that automatically adds completionist support to SWF files for game modding. Parses `CompTag` and applies colored text to inventory, crafting, and constructible menus.
+A modern desktop application that automatically adds completionist support to SWF files for The Elder Scrolls V: Skyrim – Special Edition. Parses `CompTag` and applies colored text to inventory, crafting, and constructible menus.
 
 ![Screenshot](screenshot.png)
 
@@ -47,7 +47,7 @@ A modern desktop application that automatically adds completionist support to SW
 ### Patch a single SWF file
 
 1. Click **Browse** next to the file you want to patch.
-2. Navigate to your game’s media folder (or wherever the SWF resides).
+2. Navigate to your game’s folder (or wherever the SWF resides).
 3. Select the correct `.swf` file.
 4. Click ▶ **Patch**.
 5. Wait for the log to show success – a backup will be created alongside the original.
