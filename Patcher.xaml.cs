@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
 using Util = Completionist_GUI_Patcher.Utility.Utility;
 using MSGReturn = Completionist_GUI_Patcher.Messages.ConfirmationMessage.Confirmation_Message.Confirmation_Message_Return_Value;
+using Completionist_GUI_Patcher.Messages.Generic_Message;
 
 namespace Completionist_GUI_Patcher
 {
@@ -467,9 +468,9 @@ namespace Completionist_GUI_Patcher
             Clipboard.SetText(existingLog);
             CopyLog.IsEnabled = false;
             ClearLogButton.IsEnabled = false;
-            Log.Text = $"Log copied to clipboard. Restoring in 5 seconds...";
+            Log.Text = $"Log copied to clipboard. Restoring in 3 seconds...";
 
-            int countdown = 4;
+            int countdown = 2;
             DispatcherTimer timer = new()
             {
                 Interval = TimeSpan.FromSeconds(1)
@@ -571,6 +572,43 @@ namespace Completionist_GUI_Patcher
                 UpdateLog($"Patching constructibleobjectmenu.swf");
                 StandardPatcher.Patch(this, CocksMenu!.Text, "CraftingListEntry");
             }
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            string helpText =
+                "🎯 What does this patcher do?\n" +
+                "--------------------------------\n" +
+                "It adds completionist support to SWF files (inventorylists.swf,\n" +
+                "craftingmenu.swf, constructibleobjectmenu.swf) by modifying their\n" +
+                "ActionScript to parse \"CompTag\" and apply colored text based on the tag.\n\n" +
+
+                "📁 How to use:\n" +
+                "• Patch individual files – Click the Browse buttons next to each file,\n" +
+                "  select the correct SWF, then click Patch.\n" +
+                "• Patch an entire folder – Click Browse under \"Patch entire folder\",\n" +
+                "  select your MO2 mods or Vortex staging folder (the patcher will\n" +
+                "  recursively find all matching SWF files), then click Patch.\n\n" +
+
+                "🔧 Requirements:\n" +
+                "• FFDec (free Flash decompiler) is required. If not present, the patcher\n" +
+                "  will automatically download it for you.\n\n" +
+
+                "💾 Backup:\n" +
+                "• Original files are backed up with a .completionist_backup extension\n" +
+                "  before patching. You can restore them manually if needed.\n\n" +
+
+                "⚙️ Log:\n" +
+                "• All actions are logged in the right panel. Use Copy Log or Clear Log\n" +
+                "  as needed.\n\n" +
+
+                "🔄 Updates:\n" +
+                "• The patcher checks for updates on startup and will prompt you to\n" +
+                "  download a new version if available.\n\n" +
+
+                "Developed by Faen90";
+
+            (new Generic_Message("How to use Completionist GUI Patcher", helpText, _isLightTheme, this)).ShowDialog();
         }
 
         //---------------------------------------------------
@@ -685,10 +723,10 @@ namespace Completionist_GUI_Patcher
         //---------------------------------------------------
         //---------------------------------------------------
         
-        private void PinWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void PinWindow_Click(object sender, RoutedEventArgs e)
         {
             _isPinned = !_isPinned;
-            PinWindow.Source = new BitmapImage(new Uri($"pack://application:,,,/Images/{(_isPinned ? "pinned.png" : "unpinned.png")}", UriKind.Absolute));
+            PinWindow.Content = _isPinned ? "📌" : "📍";
             PinWindow.ToolTip = _isPinned ? "Unpin Window" : "Pin Window";
             Topmost = _isPinned;
         }

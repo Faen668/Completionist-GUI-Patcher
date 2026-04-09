@@ -1,0 +1,94 @@
+﻿<Window x:Class="Completionist_GUI_Patcher.Messages.Generic_Message.Generic_Message" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:vm="clr-namespace:Completionist_GUI_Patcher.Messages.Generic_Message.viewModel" d:DataContext="{d:DesignInstance Type=vm:Generic_Message_View_Model}" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  mc:Ignorable="d" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="Transparent" MinWidth="500" AllowsTransparency="True" FontFamily="/Fonts/#Poppins" SizeToContent="WidthAndHeight" MouseDown="Window_MouseDown" Topmost="True" Title="Confirmation Message" Height="150" Width="500">
+
+    <Window.Resources>
+        <!-- ========== THEME BRUSHES (initial dark mode) ========== -->
+        <!-- Main backgrounds -->
+        <SolidColorBrush x:Key="MainBackgroundBrush" Color="#1E1E2E" />
+        <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#2D2D3F" />
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#252535" />
+        <!-- Foregrounds -->
+        <SolidColorBrush x:Key="MainForegroundBrush" Color="#F0F0F0" />
+        <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="#CCCCCC" />
+        <SolidColorBrush x:Key="AccentForegroundBrush" Color="#FA9907" />
+        <!-- Accent & borders -->
+        <SolidColorBrush x:Key="AccentBrush" Color="#FA9907" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#3A3A4A" />
+        <!-- TextBox specific -->
+        <SolidColorBrush x:Key="TextBoxBackgroundBrush" Color="#2D2D3F" />
+        <SolidColorBrush x:Key="TextBoxForegroundBrush" Color="#F0F0F0" />
+        <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#4A4A5A" />
+        <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="#FA9907" />
+        <!-- ScrollViewer -->
+        <SolidColorBrush x:Key="ScrollViewerBackgroundBrush" Color="#252535" />
+        <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#FA9907" />
+        <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#3A3A4A" />
+
+        <!-- Modern Button Style (same as main window's ModernButton) -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#D17F05" />
+                                <Setter Property="BorderBrush" Value="#D17F05" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Timer Label Style (matches secondary foreground) -->
+        <Style x:Key="TimerLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryForegroundBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,15,10" />
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource MainBackgroundBrush}" CornerRadius="20" BorderThickness="2" BorderBrush="{DynamicResource AccentBrush}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Message Title -->
+            <Label Name="Lbl_Title" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Bold" Margin="10,15,10,5" Padding="0" Foreground="{DynamicResource AccentForegroundBrush}" Content="{Binding Title}" />
+
+            <!-- Message Body -->
+            <TextBlock Name="Txt_Message" Grid.Row="1" Foreground="{DynamicResource MainForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="14" FontWeight="DemiBold" TextWrapping="Wrap" Padding="0,5" Margin="15,5,15,10" Text="{Binding Body}" />
+
+            <!-- Buttons and Timer -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,15,15">
+                <Button Name="OkButton" Style="{StaticResource ModernButton}" Content="{Binding ButtonTextOk}" Command="{Binding OkButtonClicked}" Margin="0,0,0,0" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

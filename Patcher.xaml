@@ -28,6 +28,24 @@
         <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#2A2A2F" />
 
         <!-- ========== STYLES ========== -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <!-- Modern Button Style -->
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
@@ -251,21 +269,24 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" FontSize="18" Text="Completionist GUI Patcher" VerticalAlignment="Center" Foreground="{DynamicResource AccentForegroundBrush}" FontWeight="SemiBold" />
-               <!-- Theme Toggle -->
+
+                <!-- Theme Toggle -->
                 <ToggleButton Grid.Column="1" Style="{StaticResource ThemeToggleStyle}" Margin="12,0,0,0" Click="ThemeToggle_Click" />
-                
+
                 <!-- Pin button -->
-                <Image Source="pack://application:,,,/Images/unpinned.png" Name="PinWindow" Width="20" Height="20" ToolTip="Pin Window" Cursor="Hand" MouseLeftButtonDown="PinWindow_MouseLeftButtonDown" Grid.Column="2" Margin="8,0,0,0" />
+                <Button Name="PinWindow" Grid.Column="2" Content="📍" Style="{StaticResource WindowButtonStyle}" ToolTip="Pin Window" Click="PinWindow_Click"/>
 
-
+                <!-- Help button -->
+                <Button Content="?" FontSize="20" ToolTip="Help" Style="{StaticResource WindowButtonStyle}" Click="HelpButton_Click" Grid.Column="3" />
 
                 <!-- Window buttons -->
-                <Button Content="&#x2013;" ToolTip="Minimize" Style="{StaticResource WindowButtonStyle}" Click="MinimizeButton_Click" Grid.Column="3" />
-                <Button Content="M" ToolTip="Maximize" Style="{StaticResource WindowButtonStyle}" Click="MaximizeButton_Click" Grid.Column="4" />
-                <Button Content="&#x2715;" ToolTip="Close" Style="{StaticResource WindowButtonStyle}" Click="CloseButton_Click" Grid.Column="5" />
+                <Button Content="&#x2013;" ToolTip="Minimize" Style="{StaticResource WindowButtonStyle}" Click="MinimizeButton_Click" Grid.Column="4" />
+                <Button Content="M" ToolTip="Maximize" Style="{StaticResource WindowButtonStyle}" Click="MaximizeButton_Click" Grid.Column="5" />
+                <Button Content="&#x2715;" ToolTip="Close" Style="{StaticResource WindowButtonStyle}" Click="CloseButton_Click" Grid.Column="6" />
             </Grid>
 
             <!-- Left Panel: File Selection Cards -->

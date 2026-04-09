@@ -9,6 +9,11 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Messages\Generic Message\Generic Message.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Messages\Confirmation Message\Confirmation Message.xaml">
       <SubType>Designer</SubType>
     </Page>
