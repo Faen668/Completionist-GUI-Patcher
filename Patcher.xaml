@@ -272,7 +272,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" FontSize="18" Text="Completionist GUI Patcher" VerticalAlignment="Center" Foreground="{DynamicResource AccentForegroundBrush}" FontWeight="SemiBold" />
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Image x:Name="AppIconImage" Source="/Resources/icon.png" Width="24" Height="24" Margin="0,0,8,0" />
+                    <TextBlock FontSize="18" Text="Completionist GUI Patcher" VerticalAlignment="Center" Foreground="{DynamicResource AccentForegroundBrush}" FontWeight="SemiBold" />
+                </StackPanel>
 
                 <!-- Theme Toggle -->
                 <ToggleButton Grid.Column="1" Style="{StaticResource ThemeToggleStyle}" Margin="12,0,0,0" Click="ThemeToggle_Click" />

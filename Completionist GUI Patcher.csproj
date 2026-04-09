@@ -8,11 +8,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<ApplicationIcon>Resources\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icon.ico" />
     <None Remove="Images\pinned.png" />
     <None Remove="Images\unpinned.png" />
+    <None Remove="Resources\icon.png" />
+    <None Remove="Resources\icon_light.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,8 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\icon.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\pinned.png" />
     <Resource Include="Images\unpinned.png" />
+    <Resource Include="Resources\icon.png">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\icon_light.png" />
   </ItemGroup>
 
 </Project>

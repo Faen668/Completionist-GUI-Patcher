@@ -1,4 +1,5 @@
 ﻿using Completionist_GUI_Patcher.Messages.ConfirmationMessage;
+using Completionist_GUI_Patcher.Messages.Generic_Message;
 using Completionist_GUI_Patcher.Utility;
 using Microsoft.Win32;
 using System.IO;
@@ -11,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
-using Util = Completionist_GUI_Patcher.Utility.Utility;
 using MSGReturn = Completionist_GUI_Patcher.Messages.ConfirmationMessage.Confirmation_Message.Confirmation_Message_Return_Value;
-using Completionist_GUI_Patcher.Messages.Generic_Message;
+using Util = Completionist_GUI_Patcher.Utility.Utility;
 
 namespace Completionist_GUI_Patcher
 {
@@ -94,6 +94,7 @@ namespace Completionist_GUI_Patcher
             {
                 // Modern light theme (soft, layered, minimal accent)
 
+                this.AppIconImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/icon_light.png", UriKind.Absolute));
                 this.Resources["MainBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xF7, 0xF7, 0xFA)); // softer than pure white
                 this.Resources["SecondaryBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xF4)); // subtle separation
                 this.Resources["CardBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF)); // cards still white
@@ -120,6 +121,7 @@ namespace Completionist_GUI_Patcher
             else
             {
                 // Modern dark theme (soft, layered, minimal accent)
+                this.AppIconImage.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/icon.png", UriKind.Absolute));
 
                 this.Resources["MainBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x18, 0x18, 0x1B)); // Rich dark gray
                 this.Resources["SecondaryBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x22, 0x22, 0x26)); // Slight lift
