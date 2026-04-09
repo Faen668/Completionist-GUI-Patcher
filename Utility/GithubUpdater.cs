@@ -14,7 +14,7 @@ namespace Completionist_GUI_Patcher.Utility
         private static string _downloadPath = string.Empty;
         private static string _latestReleaseURL = string.Empty;
         private static string _latestRelease = string.Empty;
-        public static bool _isUpdateAvailable = false;
+        private static bool _isUpdateAvailable = false;
 
         public static bool CanUpdate()
         {
