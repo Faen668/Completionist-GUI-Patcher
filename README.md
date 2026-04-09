@@ -143,11 +143,4 @@ This project is licensed under the MIT License – see the LICENSE file for deta
 
 ---
 
-## 📸 Screenshot
-
-Add a screenshot named `screenshot.png` in the repository root to show the UI.
-
-Example placeholder:
-![Screenshot](https://screenshot.png)
-
 Happy modding! 🎮✨
