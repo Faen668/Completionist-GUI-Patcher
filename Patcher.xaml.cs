@@ -54,6 +54,8 @@ namespace Completionist_GUI_Patcher
 
         private async void Patcher_Loaded(object sender, RoutedEventArgs e)
         {
+            PerformPostUpdateCleanup();
+
             Start.IsEnabled = false;
             SetTheme(false);
             _inputAllowed = false;
@@ -80,6 +82,79 @@ namespace Completionist_GUI_Patcher
             }
 
             _inputAllowed = await ValidateFFDec();
+        }
+
+        private void PerformPostUpdateCleanup()
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string updateNewDir = Path.Combine(baseDir, "update_new");
+            string manifestPath = Path.Combine(baseDir, "preupdate_manifest.txt");
+            string updateZip = Path.Combine(baseDir, "update.zip");
+            string updateBat = Path.Combine(baseDir, "update.bat");
+
+            if (!Directory.Exists(updateNewDir) || !File.Exists(manifestPath))
+                return;
+
+            UpdateLog("Performing post-update cleanup...");
+
+            var excludedDirs = new[] { "ffdec" };
+            var excludedFullPaths = excludedDirs
+                .Select(d => Path.GetFullPath(Path.Combine(baseDir, d)).TrimEnd(Path.DirectorySeparatorChar))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Read old file list
+            var oldFiles = File.ReadAllLines(manifestPath).Select(p => p.Replace('/', '\\')).ToList();
+
+            // Get new file list from update_new (relative paths)
+            var newFiles = Directory.GetFiles(updateNewDir, "*", SearchOption.AllDirectories)
+                .Select(f => Path.GetRelativePath(updateNewDir, f).Replace('/', '\\'))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Delete obsolete files, but skip any that belong to excluded folders
+            foreach (string relativePath in oldFiles)
+            {
+                string fullPath = Path.Combine(baseDir, relativePath);
+
+                // Skip if the file resides inside an excluded folder
+                bool isExcluded = excludedFullPaths.Any(ex => fullPath.StartsWith(ex, StringComparison.OrdinalIgnoreCase));
+                if (isExcluded)
+                    continue;
+
+                if (!newFiles.Contains(relativePath))
+                {
+                    try
+                    {
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                            UpdateLog($"Deleted obsolete file: {relativePath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        UpdateLog($"Failed to delete {relativePath}: {ex.Message}");
+                    }
+                }
+            }
+
+            // Cleanup temporary files and folders
+            try
+            {
+                if (Directory.Exists(updateNewDir))
+                    Directory.Delete(updateNewDir, true);
+                if (File.Exists(manifestPath))
+                    File.Delete(manifestPath);
+                if (File.Exists(updateZip))
+                    File.Delete(updateZip);
+                if (File.Exists(updateBat))
+                    File.Delete(updateBat);
+            }
+            catch (Exception ex)
+            {
+                UpdateLog($"Cleanup error: {ex.Message}");
+            }
+
+            UpdateLog("Post-update cleanup completed.");
         }
 
         private void ThemeToggle_Click(object sender, RoutedEventArgs e)

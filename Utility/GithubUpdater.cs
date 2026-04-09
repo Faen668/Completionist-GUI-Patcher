@@ -119,23 +119,69 @@ namespace Completionist_GUI_Patcher.Utility
             }
         }
 
-        private static void ExtractAndUpdate(string zipPath)
+        private static async Task ExtractAndUpdate(string zipPath)
         {
-            string extractPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update");
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string updateNewDir = Path.Combine(baseDir, "update_new");
+            string manifestPath = Path.Combine(baseDir, "preupdate_manifest.txt");
 
-            // Ensure no previous update is interfering
-            if (Directory.Exists(extractPath))
+            // Clean previous update attempt
+            if (Directory.Exists(updateNewDir))
+                Directory.Delete(updateNewDir, true);
+            if (File.Exists(manifestPath))
+                File.Delete(manifestPath);
+
+            // Extract new version to update_new
+            ZipFile.ExtractToDirectory(zipPath, updateNewDir);
+
+            // Create manifest of current files (pre-update)
+            await CreatePreUpdateManifestAsync(baseDir, "ffdec", "update_new");
+
+            // Create update.bat script (placed in base directory)
+            string batchScript = Path.Combine(baseDir, "update.bat");
+            string batchContent = $@"@echo off
+taskkill /IM Completionist-GUI-Patcher.exe /F
+xcopy /Y /E ""{updateNewDir}"" "".""
+start """" ""Completionist GUI Patcher.exe""
+exit";
+            await File.WriteAllTextAsync(batchScript, batchContent);
+
+            // Launch updater and shut down current instance
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                Directory.Delete(extractPath, true);
-            }
+                FileName = "cmd.exe",
+                Arguments = $"/C \"{batchScript}\"",
+                WorkingDirectory = baseDir,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+            });
 
-            ZipFile.ExtractToDirectory(zipPath, extractPath);
+            Application.Current.Shutdown();
+        }
 
-            // Run an update script (or directly move files)
-            RunUpdateScript(extractPath);
+        private static async Task CreatePreUpdateManifestAsync(string baseDir, params string[] excludeSubdirs)
+        {
+            string manifestPath = Path.Combine(baseDir, "preupdate_manifest.txt");
 
-            // Clean up
-            File.Delete(zipPath);
+            var excludedPaths = new HashSet<string>(excludeSubdirs.Select(d =>
+                Path.GetFullPath(Path.Combine(baseDir, d)).TrimEnd(Path.DirectorySeparatorChar)),
+                StringComparer.OrdinalIgnoreCase);
+
+            var allFiles = Directory.GetFiles(baseDir, "*", SearchOption.AllDirectories)
+                .Where(f =>
+                {
+                    string fullDir = Path.GetDirectoryName(f) ?? string.Empty;
+                    // Exclude if file lives inside any excluded subdirectory
+                    if (excludedPaths.Any(ex => fullDir.StartsWith(ex, StringComparison.OrdinalIgnoreCase)))
+                        return false;
+                    // Also exclude the manifest itself and temporary update files
+                    return !f.Equals(manifestPath, StringComparison.OrdinalIgnoreCase) &&
+                           !f.EndsWith("update.zip", StringComparison.OrdinalIgnoreCase) &&
+                           !f.EndsWith("update.bat", StringComparison.OrdinalIgnoreCase);
+                })
+                .Select(f => Path.GetRelativePath(baseDir, f))
+                .ToList();
+
+            await File.WriteAllLinesAsync(manifestPath, allFiles);
         }
 
         private static void RunUpdateScript(string extractedPath)
