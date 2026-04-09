@@ -1,140 +1,275 @@
-﻿<Window x:Class="Completionist_GUI_Patcher.Patcher"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Completionist_GUI_Patcher"
-        mc:Ignorable="d"
-        Title="Completionist GUI Patcher..."
-        Height="390"
-        Width="1100"
-        WindowStyle="None"
-        ResizeMode="CanResize"
-        Background="Transparent"
-        AllowsTransparency="True"
-        FontFamily="/Fonts/#Poppins"
-        MouseDown="Window_MouseDown"
-        MouseMove="Window_MouseMove"
-        MouseLeftButtonUp="Window_MouseLeftButtonUp"
-        WindowStartupLocation="CenterScreen">
+﻿<Window x:Class="Completionist_GUI_Patcher.Patcher" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:Completionist_GUI_Patcher" mc:Ignorable="d" Title="Completionist GUI Patcher..." Height="440" Width="1200" WindowStyle="None" ResizeMode="CanResize" Background="Transparent" AllowsTransparency="True" FontFamily="/Fonts/#Poppins" MouseDown="Window_MouseDown" MouseMove="Window_MouseMove" MouseLeftButtonUp="Window_MouseLeftButtonUp" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- ========== THEME BRUSHES (initial dark mode) ========== -->
+        <!-- Main backgrounds -->
+        <SolidColorBrush x:Key="MainBackgroundBrush" Color="#18181B" />
+        <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="#222226" />
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#2C2C31" />
+
+        <!-- Foregrounds -->
+        <SolidColorBrush x:Key="MainForegroundBrush" Color="#E6E6E6" />
+        <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="#A0A0A8" />
+        <SolidColorBrush x:Key="AccentForegroundBrush" Color="#F58F2A" />
+
+        <!-- Accent & borders -->
+        <SolidColorBrush x:Key="AccentBrush" Color="#F58F2A" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#3A3A40" />
+
+        <!-- TextBox specific -->
+        <SolidColorBrush x:Key="TextBoxBackgroundBrush" Color="#242428" />
+        <SolidColorBrush x:Key="TextBoxForegroundBrush" Color="#E6E6E6" />
+        <SolidColorBrush x:Key="TextBoxBorderBrush" Color="#3F3F46" />
+        <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="#F58F2A" />
+
+        <!-- ScrollViewer -->
+        <SolidColorBrush x:Key="ScrollViewerBackgroundBrush" Color="#202024" />
+        <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#F58F2A" />
+        <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#2A2A2F" />
+
+        <!-- ========== STYLES ========== -->
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#D17F05" />
+                                <Setter Property="BorderBrush" Value="#D17F05" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource TextBoxBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBoxForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource TextBoxFocusBorderBrush}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ScrollViewer Style -->
+        <!-- Modern Vertical ScrollBar -->
+        <Style x:Key="ModernVerticalThinScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="6" />
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Background="{DynamicResource ScrollBarThumbBrush}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern Horizontal ScrollBar -->
+        <Style x:Key="ModernHorizontalThinScrollBar" TargetType="ScrollBar">
+            <Setter Property="Height" Value="6" />
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track Name="PART_Track">
+                                <Track.Thumb>
+                                    <Thumb Background="{DynamicResource ScrollBarThumbBrush}"/>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Custom ScrollViewer Template -->
+        <ControlTemplate x:Key="ModernScrollViewer" TargetType="ScrollViewer">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Content -->
+                <ScrollContentPresenter Grid.Column="0" Grid.Row="0" Margin="0" />
+
+                <!-- Vertical Scroll -->
+                <ScrollBar Grid.Column="1" Grid.Row="0" Style="{StaticResource ModernVerticalThinScrollBar}" Orientation="Vertical" Name="PART_VerticalScrollBar" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+
+                <!-- Horizontal Scroll -->
+                <ScrollBar Grid.Column="0" Grid.Row="1" Style="{StaticResource ModernHorizontalThinScrollBar}" Orientation="Horizontal" Name="PART_HorizontalScrollBar" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Value="{Binding HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
+            </Grid>
+        </ControlTemplate>
+
+        <!-- Window Control Buttons (Minimize, Maximize, Close) -->
+        <Style x:Key="WindowButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource MainForegroundBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#3A3A4A" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#4A4A5A" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Theme Toggle Button (Pill Style) -->
+        <Style x:Key="ThemeToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="80" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="15">
+                            <Grid>
+                                <Rectangle x:Name="Thumb" Width="26" Height="26" Fill="{DynamicResource AccentBrush}" RadiusX="13" RadiusY="13" HorizontalAlignment="Left" Margin="2,0,0,0" />
+                                <TextBlock x:Name="Icon" FontSize="14" Foreground="{DynamicResource MainForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="🌙" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+                                <Setter TargetName="Icon" Property="Text" Value="☀" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DropShadow effect for cards -->
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="15" ShadowDepth="2" Opacity="0.2" Color="Black" />
+    </Window.Resources>
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="1"
-                      CornerRadius="0"
-                      ResizeBorderThickness="4"
-                      GlassFrameThickness="0">
-        </WindowChrome>
+        <WindowChrome CaptionHeight="1" CornerRadius="0" ResizeBorderThickness="4" GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
 
-    <Border Background="#272537"
-            BorderThickness="2"
-            BorderBrush="#fa9907"
-            CornerRadius="20">
-
+    <!-- Main Border with dynamic theme -->
+    <Border Background="{DynamicResource MainBackgroundBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2" CornerRadius="20" Effect="{StaticResource CardShadow}">
         <Grid x:Name="TopBar">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="40" />
             </Grid.RowDefinitions>
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Buttons Grid separate from the columns with * -->
-            <Grid Grid.Row="0"
-                  Grid.ColumnSpan="2"
-                  HorizontalAlignment="Stretch"
-                  Margin="10">
+            <!-- Title Bar with buttons and theme toggle -->
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="16,8,16,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Widnow Title -->
-                <TextBlock Grid.Column="0"
-                           FontSize="20"
-                           Text="Completionist GUI Patcher..."
-                           Margin="14,10,10,10"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Foreground="#C7A16D"
-                           FontWeight="DemiBold" />
+                <TextBlock Grid.Column="0" FontSize="18" Text="Completionist GUI Patcher" VerticalAlignment="Center" Foreground="{DynamicResource AccentForegroundBrush}" FontWeight="SemiBold" />
+               <!-- Theme Toggle -->
+                <ToggleButton Grid.Column="1" Style="{StaticResource ThemeToggleStyle}" Margin="12,0,0,0" Click="ThemeToggle_Click" />
+                
+                <!-- Pin button -->
+                <Image Source="pack://application:,,,/Images/unpinned.png" Name="PinWindow" Width="20" Height="20" ToolTip="Pin Window" Cursor="Hand" MouseLeftButtonDown="PinWindow_MouseLeftButtonDown" Grid.Column="2" Margin="8,0,0,0" />
 
-                <Image Source="pack://application:,,,/Images/unpinned.png"
-                       Name="PinWindow"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       MouseLeftButtonDown="PinWindow_MouseLeftButtonDown"
-                       ToolTip="Pin Window"
-                       Width="20"
-                       Height="20"
-                       Grid.Column="1" />
 
-                <Button Content="&#x2013;"
-                        ToolTip="Minimize"
-                        Style="{StaticResource CloseButtonsRounded}"
-                        Click="MinimizeButton_Click"
-                        Grid.Column="2" />
 
-                <Button Content="M"
-                        ToolTip="Maximize"
-                        Style="{StaticResource CloseButtonsRounded}"
-                        Click="MaximizeButton_Click"
-                        Grid.Column="3" />
-
-                <Button Content="&#x2715;"
-                        ToolTip="Close"
-                        Style="{StaticResource CloseButtonsRounded}"
-                        Click="CloseButton_Click"
-                        Grid.Column="4" />
+                <!-- Window buttons -->
+                <Button Content="&#x2013;" ToolTip="Minimize" Style="{StaticResource WindowButtonStyle}" Click="MinimizeButton_Click" Grid.Column="3" />
+                <Button Content="M" ToolTip="Maximize" Style="{StaticResource WindowButtonStyle}" Click="MaximizeButton_Click" Grid.Column="4" />
+                <Button Content="&#x2715;" ToolTip="Close" Style="{StaticResource WindowButtonStyle}" Click="CloseButton_Click" Grid.Column="5" />
             </Grid>
 
-            <!-- Footer Panel -->
-            <StackPanel Grid.Row="2"
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        Orientation="Horizontal"
-                        Margin="10,0,0,0"
-                        Width="Auto"
-                        Height="Auto">
-
-                <Label Content="Developed by Faen90"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"
-                       Foreground="White" />
-            </StackPanel>
-
-            <!-- Footer Panel -->
-            <StackPanel Grid.Row="2"
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Right"
-                        Orientation="Horizontal"
-                        Margin="0,0,10,0"
-                        Width="Auto"
-                        Height="Auto">
-
-                <Label Name="VersionLabel"
-                       Content="Patcher Version 1.0.1"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Foreground="White" />
-            </StackPanel>
-
-            <Border Grid.Row="1"
-                    Grid.Column="0"
-                    Background="#272537"
-                    BorderThickness="2"
-                    BorderBrush="#22202f"
-                    CornerRadius="20">
-
+            <!-- Left Panel: File Selection Cards -->
+            <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="16" Margin="12,0,6,12" Padding="12,8">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -144,205 +279,75 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Text="🎯 Patch individual files" Foreground="{DynamicResource AccentForegroundBrush}" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,12" />
 
-                    <TextBlock Grid.Column="0"
-                               Grid.Row="0"
-                               Foreground="DarkSalmon"
-                               Margin="20,10,0,10"
-                               FontSize="16"
-                               Text="Use these options if you would like to patch individual files." />
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBox x:Name="InventoryLists" Text="Select inventorylists.swf" Style="{StaticResource ModernTextBox}" Width="380" IsEnabled="False" />
+                        <Button x:Name="SelectInventoryLists" Content="Browse" Style="{StaticResource ModernButton}" Click="SelectInventoryLists_Click" Margin="10,0,0,0" />
+                    </StackPanel>
 
-                    <TextBox Grid.Column="0"
-                             Grid.Row="1"
-                             Name="InventoryLists"
-                             Text="Select inventorylists.swf"
-                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Width="506.50"
-                             TextWrapping="NoWrap"
-                             Height="35"
-                             Margin="20,5,10,5" />
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBox x:Name="CraftingMenu" Text="Select craftingmenu.swf" Style="{StaticResource ModernTextBox}" Width="380" IsEnabled="False" />
+                        <Button x:Name="SelectCraftingMenu" Content="Browse" Style="{StaticResource ModernButton}" Click="SelectCraftingMenu_Click" Margin="10,0,0,0" />
+                    </StackPanel>
 
-                    <Button Grid.Row="1"
-                            Grid.Column="1"
-                            Name="SelectInventoryLists"
-                            Click="SelectInventoryLists_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Select"
-                            Margin="10,0,10,0"
-                            ToolTip="Select inventorylists.swf"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBox x:Name="CocksMenu" Text="Select constructibleobjectmenu.swf" Style="{StaticResource ModernTextBox}" Width="380" IsEnabled="False" />
+                        <Button x:Name="SelectCocksMenu" Content="Browse" Style="{StaticResource ModernButton}" Click="SelectCocksMenu_Click" Margin="10,0,0,0" />
+                    </StackPanel>
 
-                    <TextBox Grid.Column="0"
-                             Grid.Row="2"
-                             Name="CraftingMenu"
-                             Text="Select craftingmenu.swf"
-                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Width="506.50"
-                             TextWrapping="NoWrap"
-                             Height="35"
-                             Margin="20,5,10,5" />
+                    <Separator Grid.Row="4" Margin="0,12,0,12" Background="{DynamicResource BorderBrush}" Height="1" />
 
-                    <Button Grid.Row="2"
-                            Grid.Column="1"
-                            Name="SelectCraftingMenu"
-                            Click="SelectCraftingMenu_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Select"
-                            Margin="10,0,10,0"
-                            ToolTip="Select craftingmenu.swf"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="5" Text="📁 Patch entire folder" Foreground="{DynamicResource AccentForegroundBrush}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,12" />
 
-                    <TextBox Grid.Column="0"
-                             Grid.Row="3"
-                             Name="CocksMenu"
-                             Text="Select constructibleobjectmenu.swf"
-                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Width="506.50"
-                             TextWrapping="NoWrap"
-                             Height="35"
-                             Margin="20,5,10,5" />
-
-                    <Button Grid.Row="3"
-                            Grid.Column="1"
-                            Name="SelectCocksMenu"
-                            Click="SelectCocksMenu_Click"
-                            Command="{Binding SelectCocksMenu}"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Select"
-                            Margin="10,0,10,0"
-                            ToolTip="Select constructibleobjectmenu.swf"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
-
-                    <TextBlock Grid.Column="0"
-                               Grid.Row="4"
-                               Foreground="DarkSalmon"
-                               Margin="20,20,0,10"
-                               FontSize="16"
-                               Text="Use this option if you would like to patch all files found in a folder." />
-
-                    <TextBox Grid.Column="0"
-                             Grid.Row="5"
-                             Name="LoadOrder"
-                             Text="Select mods / staging folder"
-                             Style="{StaticResource ResourceKey=AMETextBoxStyle}"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Width="506.50"
-                             TextWrapping="NoWrap"
-                             Height="35"
-                             Margin="20,5,10,5" />
-
-                    <Button Grid.Row="5"
-                            Grid.Column="1"
-                            Name="SelectLoadOrder"
-                            Click="SelectLoadOrder_Click"
-                            Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                            Content="Select"
-                            Margin="10,0,10,0"
-                            ToolTip="Select mods / staging folder"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
-
+                    <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBox x:Name="LoadOrder" Text="Select mods / staging folder" Style="{StaticResource ModernTextBox}" Width="380" IsEnabled="False" />
+                        <Button x:Name="SelectLoadOrder" Content="Browse" Style="{StaticResource ModernButton}" Click="SelectLoadOrder_Click" Margin="10,0,0,0" />
+                    </StackPanel>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1"
-                  Grid.Column="1">
+            <!-- Right Panel: Log & Actions -->
+            <Border Grid.Row="1" Grid.Column="1" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="16" Margin="6,0,12,12" Padding="12,8">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0"
-                               Grid.Row="0"
-                               Foreground="DarkSalmon"
-                               Margin="20,10,0,10"
-                               FontSize="16"
-                               Text="Execution Log..." />
-
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Grid.Row="0"
-                                Grid.Column="0"
-                                Name="Start"
-                                Click="Start_Click"
-                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                                Content="Patch"
-                                Margin="5,0,0,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center" />
-
-                        <Button Grid.Row="2"
-                                Grid.Column="1"
-                                Name="CopyLog"
-                                Click="CopyLog_Click"
-                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                                Content="Copy Log"
-                                Margin="5,0,0,0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center" />
-
-                        <Button Grid.Row="0"
-                                Grid.Column="0"
-                                Name="ClearLogButton"
-                                Click="ClearLogButton_Click"
-                                Style="{StaticResource ResourceKey=AMEButtonStyle}"
-                                Content="Clear Log"
-                                Margin="5,0,0,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center" />
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="📋 Execution Log" Foreground="{DynamicResource AccentForegroundBrush}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,0,0">
+                            <Button x:Name="Start" Style="{StaticResource ModernButton}" Click="Start_Click" Margin="0,0,8,0" Height="30" Padding="10,0">
+                                <TextBlock FontSize="14" Text="▶ Patch" />
+                            </Button>
+                            <Button x:Name="CopyLog" Style="{StaticResource ModernButton}" Click="CopyLog_Click" Margin="0,0,8,0" Height="30" Padding="10,0">
+                                <TextBlock FontSize="14" Text="Copy Log" />
+                            </Button>
+                            <Button x:Name="ClearLogButton" Style="{StaticResource ModernButton}" Click="ClearLogButton_Click" Margin="0,0,8,0" Height="30" Padding="10,0">
+                                <TextBlock FontSize="14" Text="Clear Log" />
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
 
-
-                    <Border Grid.Row="1"
-                            Grid.Column="1"
-                            Background="#272537"
-                            BorderThickness="2"
-                            BorderBrush="#22202f"
-                            Margin="10,0,0,0"
-                            CornerRadius="20">
-
-                        <ScrollViewer Grid.Row="1"
-                                      Grid.Column="0"
-                                      VerticalAlignment="Stretch"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      Template="{StaticResource AMEScrollViewer}">
-
-                            <TextBlock Text="Nothing To Show..."
-                                       Name="Log"
-                                       Margin="10,10,0,0"
-                                       Foreground="White"
-                                       VerticalAlignment="Top"
-                                       HorizontalAlignment="Left"
-                                       TextWrapping="Wrap"
-                                       FontSize="14" />
+                    <Border Grid.Row="2" Background="{DynamicResource ScrollViewerBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="12" Margin="0,8,0,0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Template="{StaticResource ModernScrollViewer}">
+                            <TextBlock x:Name="Log" Text="Nothing To Show..." Foreground="{DynamicResource MainForegroundBrush}" Margin="12,12,12,12" FontSize="13" TextWrapping="Wrap" />
                         </ScrollViewer>
                     </Border>
                 </Grid>
-            </Grid>
+            </Border>
+
+            <!-- Footer -->
+            <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                <TextBlock Text="Developed by Faen90" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="12" />
+            </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+                <TextBlock x:Name="VersionLabel" Text="Patcher Version 1.0.1" Foreground="{DynamicResource SecondaryForegroundBrush}" FontSize="12" />
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

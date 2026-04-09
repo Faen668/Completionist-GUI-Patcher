@@ -35,7 +35,6 @@ namespace Completionist_GUI_Patcher.Utility
                     File.Copy(filePath, backupPath, overwrite: false);
                     instance.UpdateLog($"Backup created at: {backupPath}");
                 }
-
             }
             catch (Exception ex)
             {
@@ -60,9 +59,12 @@ namespace Completionist_GUI_Patcher.Utility
                 }
             }
 
+            // ========== Step 1: Extract ActionScript ==========
+            instance.UpdateLog($"Extracting ActionScript from {Path.GetFileName(filePath)}...");
+            instance.UpdateLog($"Command: {extractCommand}");
+
             try
             {
-                // Start the process
                 var processStartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
@@ -75,34 +77,22 @@ namespace Completionist_GUI_Patcher.Utility
 
                 using var process = Process.Start(processStartInfo) ?? throw new Exception("Failed to start FFDec process.");
 
-                // Capture the output and error streams
                 string output = process.StandardOutput.ReadToEnd();
                 string errorOutput = process.StandardError.ReadToEnd();
-
-                // Wait for the process to exit
                 process.WaitForExit();
-
-                // Check the exit code
                 int extractResult = process.ExitCode;
 
-                // Log output only if a debugger is attached
-                if (Debugger.IsAttached)
-                {
-                    if (!string.IsNullOrEmpty(output))
-                    {
-                        instance.UpdateLog("FFDec Output: " + output);
-                    }
-                    if (!string.IsNullOrEmpty(errorOutput))
-                    {
-                        instance.UpdateLog("FFDec Error Output: " + errorOutput);
-                    }
-                }
+                // Always log stdout/stderr, not just when debugging
+                if (!string.IsNullOrEmpty(output))
+                    instance.UpdateLog($"FFDec stdout: {output}");
+                if (!string.IsNullOrEmpty(errorOutput))
+                    instance.UpdateLog($"FFDec stderr: {errorOutput}");
 
                 if (extractResult != 0)
                 {
                     File.Delete(backupPath);
-                    Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
-                    instance.UpdateLog($"Failed to extract ActionScript using FFDec. Error code: {extractResult}");
+                    Directory.Delete(extractionDir, true);
+                    instance.UpdateLog($"FFDec extraction failed with exit code {extractResult}.");
                     instance.UpdateLog("Exiting...");
                     return 0;
                 }
@@ -110,19 +100,19 @@ namespace Completionist_GUI_Patcher.Utility
             catch (Exception ex)
             {
                 File.Delete(backupPath);
-                Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
-                instance.UpdateLog($"Error executing FFDec: {ex.Message}");
+                Directory.Delete(extractionDir, true);
+                instance.UpdateLog($"Exception while running FFDec: {ex.Message}");
                 instance.UpdateLog("Exiting...");
                 return 0;
             }
 
-            instance.UpdateLog($"Actionscript extracted successfully.");
+            instance.UpdateLog($"ActionScript extracted successfully.");
 
+            // ========== Step 2: Read and modify ActionScript ==========
             string scriptContent;
             try
             {
                 scriptContent = File.ReadAllText(actionScriptFile);
-
                 if (string.IsNullOrEmpty(scriptContent))
                 {
                     File.Delete(backupPath);
@@ -132,12 +122,12 @@ namespace Completionist_GUI_Patcher.Utility
                     return 0;
                 }
 
-                // Check if the script content already has completionist support
+                // Check if already patched
                 if (scriptContent.Contains("CompTag"))
                 {
                     File.Delete(backupPath);
                     Directory.Delete(extractionDir, true);
-                    instance.UpdateLog($"{Path.GetFileName(filePath)} already has completionist support");
+                    instance.UpdateLog($"{Path.GetFileName(filePath)} already has completionist support. Skipping.");
                     instance.UpdateLog("Exiting...");
                     return 0;
                 }
@@ -166,18 +156,15 @@ namespace Completionist_GUI_Patcher.Utility
                 string pattern = @"var\s+([_a-zA-Z0-9]+)\s*=\s*a_entryObject\.text;";
                 var regex = new Regex(pattern);
 
-                // Search for the pattern in the script content
                 if (regex.IsMatch(scriptContent))
                 {
                     var match = regex.Match(scriptContent);
-
                     if (match.Groups.Count > 1)
                     {
-                        string variableName = match.Groups[1].Value; // Extracts _locX_ or similar variable name
+                        string variableName = match.Groups[1].Value;
                         string newLines = $"\n      var _comp_ = {variableName}.split(\"CompTag\");\n";
                         newLines += $"      {variableName} = _comp_[0].length > 0 ? _comp_[0] : {variableName};\n";
 
-                        // Insert specific lines after a given line
                         string additionalLines = @"
       if(a_entryObject.enabled == true && _comp_[1].length > 0)
       {
@@ -185,7 +172,6 @@ namespace Completionist_GUI_Patcher.Utility
       }
             ";
 
-                        // Modify the script content
                         string targetLine = $"var {variableName} = a_entryObject.text;";
                         var (modifiedContent, success) = Util.InsertBaseLinesAfterVariable(scriptContent, targetLine, newLines, instance);
                         if (!success)
@@ -208,7 +194,6 @@ namespace Completionist_GUI_Patcher.Utility
                             return 0;
                         }
 
-                        // Now, write the modified content back
                         if (!Util.WriteStringToFile(actionScriptFile, finalContent, instance))
                         {
                             File.Delete(backupPath);
@@ -221,7 +206,7 @@ namespace Completionist_GUI_Patcher.Utility
                     else
                     {
                         File.Delete(backupPath);
-                        Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
+                        Directory.Delete(extractionDir, true);
                         instance.UpdateLog("Failed to extract variable name from pattern match.");
                         instance.UpdateLog("Exiting...");
                         return 0;
@@ -230,27 +215,29 @@ namespace Completionist_GUI_Patcher.Utility
                 else
                 {
                     File.Delete(backupPath);
-                    Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
+                    Directory.Delete(extractionDir, true);
                     instance.UpdateLog("Pattern not found in ActionScript file.");
                     instance.UpdateLog("Exiting...");
                     return 0;
                 }
 
-                // Finished
-                instance.UpdateLog("ActionScript modification successful...");
+                instance.UpdateLog("ActionScript modification successful.");
             }
             catch (Exception ex)
             {
                 File.Delete(backupPath);
-                Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
+                Directory.Delete(extractionDir, true);
                 instance.UpdateLog($"Error modifying ActionScript: {ex.Message}");
                 instance.UpdateLog("Exiting...");
+                return 0;
             }
 
-            // Step 4: Recompile the swf file.
+            // ========== Step 3: Recompile SWF ==========
+            instance.UpdateLog($"Recompiling SWF with modified script...");
+            instance.UpdateLog($"Command: {replaceCommand}");
+
             try
             {
-                // Start the process
                 var processStartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
@@ -263,51 +250,37 @@ namespace Completionist_GUI_Patcher.Utility
 
                 using var process = Process.Start(processStartInfo) ?? throw new Exception("Failed to start FFDec process.");
 
-                // Capture the output and error streams
                 string output = process.StandardOutput.ReadToEnd();
                 string errorOutput = process.StandardError.ReadToEnd();
-
-                // Wait for the process to exit
                 process.WaitForExit();
-
-                // Check the exit code
                 int result = process.ExitCode;
 
-                // Log output only if a debugger is attached
-                if (Debugger.IsAttached)
-                {
-                    if (!string.IsNullOrEmpty(output))
-                    {
-                        instance.UpdateLog("FFDec Output: " + output);
-                    }
-                    if (!string.IsNullOrEmpty(errorOutput))
-                    {
-                        instance.UpdateLog("FFDec Error Output: " + errorOutput);
-                    }
-                }
+                if (!string.IsNullOrEmpty(output))
+                    instance.UpdateLog($"FFDec stdout: {output}");
+                if (!string.IsNullOrEmpty(errorOutput))
+                    instance.UpdateLog($"FFDec stderr: {errorOutput}");
 
                 if (result != 0)
                 {
                     File.Delete(backupPath);
-                    Directory.Delete(extractionDir, true);  // Use true to delete non-empty directories
-                    instance.UpdateLog($"Failed to replace ActionScript using FFDec. Error code: {result}");
+                    Directory.Delete(extractionDir, true);
+                    instance.UpdateLog($"FFDec replacement failed with exit code {result}.");
                     instance.UpdateLog("Exiting...");
                     return 0;
                 }
 
-                instance.UpdateLog("SWF compiled successfully...");
-                Directory.Delete(extractionDir, true);  // Clean up extraction directory
+                instance.UpdateLog("SWF compiled successfully.");
+                Directory.Delete(extractionDir, true);
                 return 1;
             }
             catch (Exception ex)
             {
                 File.Delete(backupPath);
-                Directory.Delete(extractionDir, true);  // Clean up extraction directory
-                instance.UpdateLog($"Error executing FFDec replace: {ex.Message}");
+                Directory.Delete(extractionDir, true);
+                instance.UpdateLog($"Exception during FFDec replacement: {ex.Message}");
                 instance.UpdateLog("Exiting...");
+                return 0;
             }
-
-            return 0;
         }
     }
 }

@@ -2,17 +2,17 @@
 using Completionist_GUI_Patcher.Utility;
 using Microsoft.Win32;
 using System.IO;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Util = Completionist_GUI_Patcher.Utility.Utility;
-using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
-using System.Windows.Controls;
-using System.Net.Http;
 using System.Windows.Threading;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
+using GUpd = Completionist_GUI_Patcher.Utility.GitHubUpdater;
+using Util = Completionist_GUI_Patcher.Utility.Utility;
+using MSGReturn = Completionist_GUI_Patcher.Messages.ConfirmationMessage.Confirmation_Message.Confirmation_Message_Return_Value;
 
 namespace Completionist_GUI_Patcher
 {
@@ -24,6 +24,7 @@ namespace Completionist_GUI_Patcher
         private bool mRestoreForDragMove = false;
         private bool _isPinned = false;
         private bool _inputAllowed = false;
+        private bool _isLightTheme = false;
 
         private readonly List<string> _logLines = [];
 
@@ -42,7 +43,7 @@ namespace Completionist_GUI_Patcher
         {
             InitializeComponent();
             this.SourceInitialized += Window_SourceInitialized;
-            VersionLabel.Content = $"Patcher Version {GUpd.GetCurrentVersion()}";
+            VersionLabel.Text = $"Patcher Version {GUpd.GetCurrentVersion()}";
             this.Loaded += Patcher_Loaded;
         }
 
@@ -52,15 +53,18 @@ namespace Completionist_GUI_Patcher
 
         private async void Patcher_Loaded(object sender, RoutedEventArgs e)
         {
+            Start.IsEnabled = false;
+            SetTheme(false);
             _inputAllowed = false;
 
             //do app updates
             await GUpd.CheckForUpdates();
-            if (GUpd.CanUpdate()) // Now this will correctly return true if an update is found
+            if (GUpd.CanUpdate())
             {
                 var cm = new Confirmation_Message(
                     "Patcher Update Found...",
                     $"A new version ({GUpd.GetLatestVersion()}) is available. You are running {GUpd.GetCurrentVersion()}.\nDo you want to update now?",
+                    _isLightTheme,
                     null,
                     null,
                     "Update Now",
@@ -68,13 +72,76 @@ namespace Completionist_GUI_Patcher
                     5);
 
                 cm.ShowDialog();
-                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
+                if (cm.GetUserInputValue() == MSGReturn.kAccept)
                 {
                     GUpd.DoUpdate();
                 }
             }
 
             _inputAllowed = await ValidateFFDec();
+        }
+
+        private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            _isLightTheme = !_isLightTheme;
+            SetTheme(_isLightTheme);
+        }
+
+        private void SetTheme(bool isLight)
+        {
+            if (isLight)
+            {
+                // Modern light theme (soft, layered, minimal accent)
+
+                this.Resources["MainBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xF7, 0xF7, 0xFA)); // softer than pure white
+                this.Resources["SecondaryBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xF4)); // subtle separation
+                this.Resources["CardBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF)); // cards still white
+
+                this.Resources["MainForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0x1C, 0x1C, 0x1E)); // near-black (easier on eyes)
+                this.Resources["SecondaryForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0x6B, 0x6B, 0x73)); // muted text
+
+                // 👇 toned-down orange (used sparingly)
+                this.Resources["AccentBrush"] = new SolidColorBrush(Color.FromRgb(0xD9, 0x6A, 0x1F));
+                this.Resources["AccentForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0xD9, 0x6A, 0x1F));
+
+                this.Resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(0xD8, 0xD8, 0xDE)); // softer border
+
+                this.Resources["TextBoxBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+                this.Resources["TextBoxForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0x1C, 0x1C, 0x1E));
+                this.Resources["TextBoxBorderBrush"] = new SolidColorBrush(Color.FromRgb(0xD0, 0xD0, 0xD8));
+                this.Resources["TextBoxFocusBorderBrush"] = new SolidColorBrush(Color.FromRgb(0xD9, 0x6A, 0x1F));
+
+                // 👇 key change: neutral scrollbars (no orange noise)
+                this.Resources["ScrollViewerBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xF3, 0xF3, 0xF7));
+                this.Resources["ScrollBarThumbBrush"] = new SolidColorBrush(Color.FromRgb(0xC6, 0xC6, 0xCE));
+                this.Resources["ScrollBarTrackBrush"] = new SolidColorBrush(Color.FromRgb(0xE4, 0xE4, 0xEC));
+            }
+            else
+            {
+                // Modern dark theme (soft, layered, minimal accent)
+
+                this.Resources["MainBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x18, 0x18, 0x1B)); // Rich dark gray
+                this.Resources["SecondaryBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x22, 0x22, 0x26)); // Slight lift
+                this.Resources["CardBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x2C, 0x2C, 0x31)); // Card elevation
+
+                this.Resources["MainForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0xE6, 0xE6, 0xE6)); // Softer white
+                this.Resources["SecondaryForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0xA0, 0xA0, 0xA8)); // Muted text
+
+                // 👇 toned-down, modern orange
+                this.Resources["AccentBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0x8F, 0x2A));
+                this.Resources["AccentForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0x8F, 0x2A));
+
+                this.Resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(0x3A, 0x3A, 0x40)); // softer border
+
+                this.Resources["TextBoxBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x24, 0x24, 0x28));
+                this.Resources["TextBoxForegroundBrush"] = new SolidColorBrush(Color.FromRgb(0xE6, 0xE6, 0xE6));
+                this.Resources["TextBoxBorderBrush"] = new SolidColorBrush(Color.FromRgb(0x3F, 0x3F, 0x46));
+                this.Resources["TextBoxFocusBorderBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0x8F, 0x2A));
+
+                this.Resources["ScrollViewerBackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x20, 0x20, 0x24));
+                this.Resources["ScrollBarThumbBrush"] = new SolidColorBrush(Color.FromRgb(0xF5, 0x8F, 0x2A));
+                this.Resources["ScrollBarTrackBrush"] = new SolidColorBrush(Color.FromRgb(0x2A, 0x2A, 0x2F));
+            }
         }
 
         //---------------------------------------------------
@@ -91,6 +158,7 @@ namespace Completionist_GUI_Patcher
                 var cm = new Confirmation_Message(
                     "FFDec Validation Failed...",
                     $"Completionist GUI Patcher relies on a tool called FFDec to function.\nWithout FFDec Installed, no files can be patched.\n\nDo you want to download it now?",
+                    _isLightTheme,
                     null,
                     null,
                     "Download",
@@ -98,7 +166,7 @@ namespace Completionist_GUI_Patcher
                     5);
 
                 cm.ShowDialog();
-                if (cm.GetUserInputValue() == Confirmation_Message.Confirmation_Message_Return_Value.kAccept)
+                if (cm.GetUserInputValue() == MSGReturn.kAccept)
                 {
                     UpdateLog("Downloading FFDec...");
                     bool success = await DownloadFFDec();
@@ -208,6 +276,11 @@ namespace Completionist_GUI_Patcher
         //---------------------------------------------------
         //---------------------------------------------------
 
+        private static readonly JsonSerializerOptions jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public async Task<bool> DownloadFFDecLatestNightly()
         {
             string apiUrl = "https://api.github.com/repos/jindrapetrik/jpexs-decompiler/releases";
@@ -221,10 +294,7 @@ namespace Completionist_GUI_Patcher
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MyApp/1.0)");
 
                 string json = await client.GetStringAsync(apiUrl);
-                var releases = System.Text.Json.JsonSerializer.Deserialize<List<GitHubRelease>>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var releases = JsonSerializer.Deserialize<List<GitHubRelease>>(json, jsonOptions);
 
                 // Find the latest nightly pre-release
                 var nightly = releases?
@@ -298,6 +368,7 @@ namespace Completionist_GUI_Patcher
                             textBox.Text = openFileDialog.FileName;
                             LoadOrder!.Text = "Select mods / staging folder";
                             UpdateLog($"Selected File: {textBox.Text}");
+                            Start.IsEnabled = true;
                         }
                         return;
                     }
@@ -347,6 +418,11 @@ namespace Completionist_GUI_Patcher
             Log!.Text = "Nothing To Show...";
         }
 
+        private void DisplayCurrentWindowDimentions()
+        {
+            UpdateLog($"Current Window Dimensions: {ActualWidth}x{ActualHeight}");
+        }
+
         //---------------------------------------------------
         //---------------------------------------------------
         //---------------------------------------------------
@@ -377,6 +453,7 @@ namespace Completionist_GUI_Patcher
                 CraftingMenu!.Text = "Select craftingmenu.swf";
                 CocksMenu!.Text = "Select constructibleobjectmenu.swf";
                 UpdateLog($"Selected Folder: {LoadOrder.Text}");
+                Start.IsEnabled = true;
             }
         }
 
@@ -386,8 +463,33 @@ namespace Completionist_GUI_Patcher
 
         private void CopyLog_Click(object sender, RoutedEventArgs e)
         {
-            UpdateLog($"Log Copied To Clipboard...");
-            Clipboard.SetText(Log!.Text);
+            var existingLog = Log!.Text;
+            Clipboard.SetText(existingLog);
+            CopyLog.IsEnabled = false;
+            ClearLogButton.IsEnabled = false;
+            Log.Text = $"Log copied to clipboard. Restoring in 5 seconds...";
+
+            int countdown = 4;
+            DispatcherTimer timer = new()
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            timer.Tick += (s, args) =>
+            {
+                if (countdown > 0)
+                {
+                    Log.Text = $"Log copied to clipboard. Restoring in {countdown} seconds...";
+                    countdown--;
+                }
+                else
+                {
+                    timer.Stop();
+                    Log.Text = existingLog;
+                    CopyLog.IsEnabled = true;
+                    ClearLogButton.IsEnabled = true;
+                }
+            };
+            timer.Start();
         }
 
         //---------------------------------------------------

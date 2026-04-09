@@ -15,26 +15,5 @@
     <Page Update="Patcher.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Theme\ButtonStyleTimer.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\ScrollViewerTheme.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\ButtonStyle.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\CheckboxTheme.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\TextBoxTheme.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\TooltipStyle.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Theme\CloseButtonsRounded.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 </Project>

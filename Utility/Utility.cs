@@ -54,7 +54,7 @@ namespace Completionist_GUI_Patcher.Utility
             {
                 if (lines[i].Contains(targetLine))
                 {
-                    List<string> modifiedLines = lines.ToList();
+                    List<string> modifiedLines = [.. lines];
                     modifiedLines.Insert(i + 1, newLines);
 
                     return (string.Join("\n", modifiedLines), true);
@@ -100,8 +100,10 @@ namespace Completionist_GUI_Patcher.Utility
 
             if (monitor != IntPtr.Zero)
             {
-                MONITORINFO monitorInfo = new MONITORINFO();
-                monitorInfo.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+                MONITORINFO monitorInfo = new()
+                {
+                    cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+                };
                 GetMonitorInfo(monitor, monitorInfo);
 
                 RECT workArea = monitorInfo.rcWork;
