@@ -1,15 +1,16 @@
 # 🎯 Completionist GUI Patcher
 
-![Version](https://img.shields.io/github/v/release/Faen668/Completionist-GUI-Patcher)
-![Downloads](https://img.shields.io/github/downloads/Faen668/Completionist-GUI-Patcher/total)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
-![.NET](https://img.shields.io/badge/.NET-8.0-purple)
-![Last commit](https://img.shields.io/github/last-commit/Faen668/Completionist-GUI-Patcher)
-![Stars](https://img.shields.io/github/stars/Faen668/Completionist-GUI-Patcher)
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/Faen668/Completionist-GUI-Patcher" />
+  <img src="https://img.shields.io/github/downloads/Faen668/Completionist-GUI-Patcher/total" />
+  <img src="https://img.shields.io/github/license/Faen668/Completionist-GUI-Patcher" />
+  <img src="https://img.shields.io/badge/platform-Windows-blue" />
+  <img src="https://img.shields.io/badge/.NET-8.0-purple" />
+  <img src="https://img.shields.io/github/last-commit/Faen668/Completionist-GUI-Patcher" />
+  <img src="https://img.shields.io/github/stars/Faen668/Completionist-GUI-Patcher" />
+</p>
 
-
-A modern desktop application that automatically adds completionist support to SWF files for The Elder Scrolls V: Skyrim – Special Edition. Parses `CompTag` and applies colored text to inventory, crafting, and constructible menus.
+A modern desktop tool that adds completionist support to SWF files for Skyrim Special Edition by parsing `CompTag` and applying colored text to UI menus.
 
 ![Screenshot](screenshot.png)
 
@@ -43,6 +44,9 @@ A modern desktop application that automatically adds completionist support to SW
 4. Run `Completionist GUI Patcher.exe`.
 
 ⚠️ Windows SmartScreen may warn – this is normal for unsigned utilities. Click **More info** → **Run anyway**.
+
+✔ No files are modified without a backup  
+✔ No external network access except FFDec download & update check
 
 ---
 
@@ -93,12 +97,13 @@ To create a release zip, run the provided `create_release.ps1` script.
 
 The patcher uses FFDec (JPEXS Free Flash Decompiler) to:
 
-1. Extract ActionScript from the target SWF.
-2. Locate the function that reads item names (`var _locX_ = a_entryObject.text;`).
-3. Inject code that splits the text on `CompTag` and optionally changes the text color.
-4. Recompile the SWF with the modified script.
+1. Extract ActionScript from the SWF
+2. Locate the item name assignment (`a_entryObject.text`)
+3. Inject CompTag parsing + color logic
+4. Recompile the SWF
 
-Result: any item name containing `CompTag` (e.g., `Iron Sword CompTag#FFAA00`) will display only the part before the tag, and the text will be colored according to the hex value after the tag.
+**Result:**  
+`Iron Sword CompTag#FFAA00` → `Iron Sword` (colored)
 
 ---
 
@@ -108,7 +113,7 @@ Result: any item name containing `CompTag` (e.g., `Iron Sword CompTag#FFAA00`) w
 A: The patcher doesn't include a full SWF compiler – FFDec is the industry standard for Flash decompilation and recompilation.
 
 **Q: Will this work with my mod manager?**
-A: Yes. Works with manually installed mods, MO2, Vortex, or any folder structure with SWF files.
+A: Yes. Works with manual installs, MO2, Vortex, or any mod manager using a standard folder structure.
 
 **Q: Is the patcher safe?**
 A: Yes. It creates a backup before modifying any file. The code is open source, so you can review every change.
