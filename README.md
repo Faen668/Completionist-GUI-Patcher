@@ -1,4 +1,6 @@
-# 🎯 Completionist GUI Patcher
+<p align="center">
+  # 🎯 Completionist GUI Patcher
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/Faen668/Completionist-GUI-Patcher" />
