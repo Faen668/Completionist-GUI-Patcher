@@ -4,6 +4,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
+![Downloads](https://img.shields.io/github/downloads/Faen668/Completionist-GUI-Patcher/total)
 
 A modern desktop application that automatically adds completionist support to SWF files for The Elder Scrolls V: Skyrim – Special Edition. Parses `CompTag` and applies colored text to inventory, crafting, and constructible menus.
 
