@@ -3,7 +3,6 @@
 <p align="center">
   <img src="https://img.shields.io/github/v/release/Faen668/Completionist-GUI-Patcher" />
   <img src="https://img.shields.io/github/downloads/Faen668/Completionist-GUI-Patcher/total" />
-  <img src="https://img.shields.io/github/license/Faen668/Completionist-GUI-Patcher" />
   <img src="https://img.shields.io/badge/platform-Windows-blue" />
   <img src="https://img.shields.io/badge/.NET-8.0-purple" />
   <img src="https://img.shields.io/github/last-commit/Faen668/Completionist-GUI-Patcher" />
