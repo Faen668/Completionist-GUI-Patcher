@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/github/v/release/Faen668/Completionist-GUI-Patcher)
 ![Downloads](https://img.shields.io/github/downloads/Faen668/Completionist-GUI-Patcher/total)
-![License](https://img.shields.io/github/license/Faen668/Completionist-GUI-Patcher)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple)
 ![Last commit](https://img.shields.io/github/last-commit/Faen668/Completionist-GUI-Patcher)
